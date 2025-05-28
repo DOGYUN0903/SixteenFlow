@@ -59,4 +59,14 @@ public class PostController {
         return ApiResponse.status(PostSuccess.POST_UPDATED)
                 .body(postService.updatePost(postId, requestDto));
     }
+
+    /**
+     * 게시글 삭제
+     */
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("postId") Long postId) {
+        postService.deletePost(postId);
+        return ApiResponse.status(PostSuccess.POST_DELETED).body();
+
+    }
 }

@@ -76,5 +76,16 @@ public class PostServiceImpl implements PostService {
         return new UpdatePostResponseDto(findPost);
     }
 
+    @Transactional
+    @Override
+    public void deletePost(Long postId) {
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException());
+
+        // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
+
+        postRepository.delete(findPost);
+    }
+
 
 }
