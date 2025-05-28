@@ -10,4 +10,6 @@ public interface PostService {
     CreatePostResponseDto createPost(Long memberId, CreatePostRequestDto requestDto);
 
     PostListResponseDto findAllPost();
+
+    PostResponseDto findPostById(Long postId);
 }

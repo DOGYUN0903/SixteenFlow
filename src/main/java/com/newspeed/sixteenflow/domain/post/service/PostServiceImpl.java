@@ -8,6 +8,7 @@ import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
+import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,15 @@ public class PostServiceImpl implements PostService {
                 .map(post -> new PostResponseDto(post, null, null)) // FIXME: 좋아요/댓글 수 미연동 상태
                 .toList();
         return new PostListResponseDto(postDto);
+    }
+
+    @Override
+    public PostResponseDto findPostById(Long postId) {
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException());
+
+        // TODO: 현재는 좋아요 수(postLike)와 댓글 수(postComment)를 null로 설정하고 있음.
+        // 추후 PostLike, Comment 데이터와 연동하여 실제 수치를 계산해 넣을 예정.
+        return new PostResponseDto(findPost, null, null); // FIXME: 좋아요/댓글 수 미연동 상태
     }
 }

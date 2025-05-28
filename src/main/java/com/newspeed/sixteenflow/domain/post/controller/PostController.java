@@ -38,4 +38,13 @@ public class PostController {
         return ApiResponse.status(PostSuccess.POST_FOUND)
                 .body(postService.findAllPost());
     }
+
+    /**
+     * 게시글 단건 조회
+     */
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostResponseDto>> findPostById(@PathVariable("postId") Long postId) {
+        return ApiResponse.status(PostSuccess.POST_FOUND)
+                .body(postService.findPostById(postId));
+    }
 }
