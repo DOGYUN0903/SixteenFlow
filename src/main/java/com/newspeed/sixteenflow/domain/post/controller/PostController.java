@@ -1,5 +1,7 @@
 package com.newspeed.sixteenflow.domain.post.controller;
 
+import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
+import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
@@ -8,10 +10,7 @@ import com.newspeed.sixteenflow.global.response.success.PostSuccess;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -29,5 +28,14 @@ public class PostController {
         // ex) @AuthenticationPrincipal Long memberId (Spring Security 사용 시)
         return ApiResponse.status(PostSuccess.POST_CREATED)
                 .body(postService.createPost(requestDto)); // FIXME: 현재는 memberId 미전달 상태
+    }
+
+    /**
+     * 게시글 전체 조회
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<PostListResponseDto>> findAllPost() {
+        return ApiResponse.status(PostSuccess.POST_FOUND)
+                .body(postService.findAllPost());
     }
 }
