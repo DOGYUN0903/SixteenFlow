@@ -14,9 +14,7 @@ public enum TestError implements BaseCode {
     }
 
     @Override
-    public HttpStatus getStatus() {
-        return status;
-    }
+    public HttpStatus getStatus() { return status; }
 
     @Override
     public String getMessage() {

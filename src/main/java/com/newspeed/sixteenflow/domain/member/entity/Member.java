@@ -3,6 +3,7 @@ package com.newspeed.sixteenflow.domain.member.entity;
 import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column
     private String profileImageUrl;
 
     @Column(nullable = false)
@@ -33,8 +35,20 @@ public class Member extends BaseEntity {
 
     private String address;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     @Setter
     private boolean isDeleted;
+
+    @Builder
+    public Member(String email, String profileImageUrl, String password, String username, String nickname, String address, String phoneNumber) {
+        this.email = email;
+        this.profileImageUrl = profileImageUrl;
+        this.password = password;
+        this.username = username;
+        this.nickname = nickname;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+    }
 }
