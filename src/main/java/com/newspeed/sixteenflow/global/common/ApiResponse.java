@@ -1,11 +1,13 @@
 package com.newspeed.sixteenflow.global.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 
 @Getter
 @JsonPropertyOrder({ "statusCode", "message", "body" })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private int statusCode;
