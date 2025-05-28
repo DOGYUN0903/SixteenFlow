@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public enum MemberSuccess implements BaseCode {
     MEMBER_SIGNUP(HttpStatus.CREATED, "회원가입이 완료되었습니다."),
-    MEMBER_FIND(HttpStatus.OK, "프로필 조회에 성공하였습니다."),
+    MEMBER_FOUND(HttpStatus.OK, "프로필 조회에 성공하였습니다."),
     MEMBER_LOGIN(HttpStatus.OK, "로그인에 성공하였습니다."),
     MEMBER_LOGOUT(HttpStatus.OK, "로그아웃 하였습니다."),
     MEMBER_UPDATE_PROFILE(HttpStatus.OK, "프로필 수정이 완료되었습니다."),

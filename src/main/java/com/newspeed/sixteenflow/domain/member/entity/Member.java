@@ -38,8 +38,7 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String phoneNumber;
 
-    @Setter
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
     @Builder
     public Member(String email, String profileImageUrl, String password, String username, String nickname, String address, String phoneNumber) {
@@ -50,5 +49,9 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
         this.address = address;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

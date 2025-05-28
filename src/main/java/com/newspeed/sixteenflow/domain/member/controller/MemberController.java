@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody MemberRequestDto requestDto) {
-//        return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.createMember(requestDto));
-//    }
+    @PostMapping
+    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody MemberRequestDto requestDto) {
+        return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.createMember(requestDto));
+    }
+
+
 
 }
