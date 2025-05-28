@@ -14,7 +14,7 @@ public class TestController {
     public ResponseEntity<ApiResponse<TestDto>> test() {
         TestDto testDto = new TestDto("이름1", 13);
          //return ApiResponse.status(TestSuccess.TEST_SUCCESS).body(testDto);
-        return ApiResponse.status(TestEnum.TEST_SUCCESS).body();
+        return ApiResponse.status(TestSuccess.TEST_SUCCESS).body();
     }
 
     @GetMapping("test2")
