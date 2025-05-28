@@ -3,6 +3,7 @@ package com.newspeed.sixteenflow.global.exception;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.error.ValidationError;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,5 +25,10 @@ public class GlobalExceptionHandler {
             errors.put(error.getField(), error.getDefaultMessage());
         });
         return ApiResponse.status(ValidationError.VALIDATION_FIELD_ERROR).body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return ApiResponse.status(ValidationError.MISSING_REQUEST_BODY).body();
     }
 }
