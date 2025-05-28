@@ -1,10 +1,16 @@
 package com.newspeed.sixteenflow.domain.post.entity;
 
+import com.newspeed.sixteenflow.domain.member.entity.Member;
+import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table
-public class Post {
+@Table(name = "post")
+@Getter
+@NoArgsConstructor
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,5 +20,15 @@ public class Post {
     private String content;
 
     @Column(nullable = true)
-    private String image_url;
+    private String imageUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    public Post(String content, String imageUrl, Member member) {
+        this.content = content;
+        this.imageUrl = imageUrl;
+        this.member = member;
+    }
 }
