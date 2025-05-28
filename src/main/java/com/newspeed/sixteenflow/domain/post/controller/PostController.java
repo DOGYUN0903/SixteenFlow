@@ -4,6 +4,8 @@ import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
+import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
+import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.success.PostSuccess;
@@ -46,5 +48,15 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostResponseDto>> findPostById(@PathVariable("postId") Long postId) {
         return ApiResponse.status(PostSuccess.POST_FOUND)
                 .body(postService.findPostById(postId));
+    }
+
+    /**
+     * 게시글 수정
+     */
+    @PatchMapping("/{postId}")
+    public ResponseEntity<ApiResponse<UpdatePostResponseDto>> updatePost(@PathVariable("postId") Long postId,
+                                                                         @Valid @RequestBody UpdatePostRequestDto requestDto) {
+        return ApiResponse.status(PostSuccess.POST_UPDATED)
+                .body(postService.updatePost(postId, requestDto));
     }
 }

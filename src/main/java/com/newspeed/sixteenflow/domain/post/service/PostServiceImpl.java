@@ -6,12 +6,15 @@ import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
+import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
+import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -23,6 +26,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     @Override
     public CreatePostResponseDto createPost(Long memberId, CreatePostRequestDto requestDto) {
         // FIXME: 현재는 임시로 ResponseStatusException 사용 중.
@@ -58,4 +62,19 @@ public class PostServiceImpl implements PostService {
         // 추후 PostLike, Comment 데이터와 연동하여 실제 수치를 계산해 넣을 예정.
         return new PostResponseDto(findPost, null, null); // FIXME: 좋아요/댓글 수 미연동 상태
     }
+
+    @Transactional
+    @Override
+    public UpdatePostResponseDto updatePost(Long postId, UpdatePostRequestDto requestDto) {
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException());
+
+        // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
+
+        findPost.update(requestDto.getContent(), requestDto.getImageUrl());
+
+        return new UpdatePostResponseDto(findPost);
+    }
+
+
 }
