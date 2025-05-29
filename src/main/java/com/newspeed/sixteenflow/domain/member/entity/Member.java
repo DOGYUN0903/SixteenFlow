@@ -58,9 +58,7 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public void updateAddress(String address) {
-        this.address = address;
-    }
+    public void updateAddress(String address) { this.address = address; }
 
     public void updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -70,7 +68,10 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void updatePassword(String password) { this.password = password; }
+
     public void delete() {
         this.isDeleted = true;
     }
 }
+
