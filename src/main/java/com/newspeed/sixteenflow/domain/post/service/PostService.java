@@ -10,13 +10,13 @@ import com.newspeed.sixteenflow.domain.post.entity.Post;
 import jakarta.validation.Valid;
 
 public interface PostService {
-    CreatePostResponseDto createPost(Long memberId, CreatePostRequestDto requestDto);
+    CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto);
 
-    PostListResponseDto findAllPost();
+    PostListResponseDto findAll();
 
-    PostResponseDto findPostById(Long postId);
+    PostResponseDto findById(Long postId);
 
-    UpdatePostResponseDto updatePost(Long memberId, Long postId, UpdatePostRequestDto requestDto);
+    UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto);
 
-    void deletePost(Long memberId, Long postId);
+    void delete(Long memberId, Long postId);
 }

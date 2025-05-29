@@ -29,7 +29,7 @@ public class PostController {
         // TODO: 인증 방식 결정 후 로그인 유저의 memberId 주입 로직 추가 예정
         // ex) @AuthenticationPrincipal Long memberId (Spring Security 사용 시)
         return ApiResponse.status(PostSuccess.POST_CREATED)
-                .body(postService.createPost(7L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
+                .body(postService.create(7L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
     }
 
     /**
@@ -38,7 +38,7 @@ public class PostController {
     @GetMapping
     public ResponseEntity<ApiResponse<PostListResponseDto>> findAllPost() {
         return ApiResponse.status(PostSuccess.POST_FOUND)
-                .body(postService.findAllPost());
+                .body(postService.findAll());
     }
 
     /**
@@ -47,7 +47,7 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDto>> findPostById(@PathVariable("postId") Long postId) {
         return ApiResponse.status(PostSuccess.POST_FOUND)
-                .body(postService.findPostById(postId));
+                .body(postService.findById(postId));
     }
 
     /**
@@ -57,7 +57,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<UpdatePostResponseDto>> updatePost(@PathVariable("postId") Long postId,
                                                                          @Valid @RequestBody UpdatePostRequestDto requestDto) {
         return ApiResponse.status(PostSuccess.POST_UPDATED)
-                .body(postService.updatePost(6L, postId, requestDto));
+                .body(postService.update(6L, postId, requestDto));
     }
 
     /**
@@ -65,7 +65,7 @@ public class PostController {
      */
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("postId") Long postId) {
-        postService.deletePost(6L, postId);
+        postService.delete(6L, postId);
         return ApiResponse.status(PostSuccess.POST_DELETED).body();
 
     }

@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public CreatePostResponseDto createPost(Long memberId, CreatePostRequestDto requestDto) {
+    public CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto) {
         Member findMember = findMemberByIdOrElseThrow(memberId);
 
         Post post = new Post(
@@ -42,7 +42,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostListResponseDto findAllPost() {
+    public PostListResponseDto findAll() {
         // TODO: 현재는 좋아요 수(postLike)와 댓글 수(postComment)를 null로 설정하고 있음.
         // 추후 PostLike, Comment 데이터와 연동하여 실제 수치를 계산해 넣을 예정.
         List<PostResponseDto> postDto = postRepository.findAll().stream()
@@ -52,7 +52,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto findPostById(Long postId) {
+    public PostResponseDto findById(Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
         // TODO: 현재는 좋아요 수(postLike)와 댓글 수(postComment)를 null로 설정하고 있음.
@@ -62,7 +62,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public UpdatePostResponseDto updatePost(Long memberId, Long postId, UpdatePostRequestDto requestDto) {
+    public UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
         // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deletePost(Long memberId, Long postId) {
+    public void delete(Long memberId, Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
         // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
