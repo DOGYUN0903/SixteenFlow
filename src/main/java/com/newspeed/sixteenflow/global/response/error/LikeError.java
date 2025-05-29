@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 public enum LikeError implements BaseCode {
     //MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
     COMMENT_ERROR(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
-    POST_ERROR(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+    POST_ERROR(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다.");
 
     private final HttpStatus status;
     private final String message;
