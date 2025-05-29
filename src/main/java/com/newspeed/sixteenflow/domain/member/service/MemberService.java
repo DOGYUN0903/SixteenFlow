@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -60,7 +62,8 @@ public class MemberService {
     }
 
     public Member findByIdOrElseThrow(Long id) {
-        return memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+        Optional<Member> foundMember = memberRepository.findByIdAndIsDeleted(id, false);
+        return foundMember.orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
     }
 
     public MemberResponseDto findById(Long id) {
