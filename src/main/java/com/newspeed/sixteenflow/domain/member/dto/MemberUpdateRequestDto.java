@@ -7,6 +7,10 @@ import lombok.Getter;
 @Getter
 public class MemberUpdateRequestDto {
     @Email
+    @Pattern(
+            regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+            message = "올바른 이메일 형식이 아닙니다."
+    )
     private final String email;
     private final String profileImageUrl;
     private final String nickname;
