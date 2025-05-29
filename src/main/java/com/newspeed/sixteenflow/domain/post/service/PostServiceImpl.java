@@ -1,7 +1,7 @@
 package com.newspeed.sixteenflow.domain.post.service;
 
 import com.newspeed.sixteenflow.domain.member.entity.Member;
-import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
+import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
@@ -13,10 +13,8 @@ import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostUnauthorizedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,12 +23,13 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+//    private final FollowService followService;
 
     @Transactional
     @Override
     public CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto) {
-        Member findMember = findMemberByIdOrElseThrow(memberId);
+        Member findMember = memberService.findByIdOrElseThrow(memberId);
 
         Post post = new Post(
                 requestDto.getContent(),
@@ -43,10 +42,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostListResponseDto findAll() {
-        // TODO: 현재는 좋아요 수(postLike)와 댓글 수(postComment)를 null로 설정하고 있음.
-        // 추후 PostLike, Comment 데이터와 연동하여 실제 수치를 계산해 넣을 예정.
         List<PostResponseDto> postDto = postRepository.findAll().stream()
-                .map(post -> new PostResponseDto(post, null, null)) // FIXME: 좋아요/댓글 수 미연동 상태
+                .map(post -> new PostResponseDto(post,
+                        0L,
+                        0L))
                 .toList();
         return new PostListResponseDto(postDto);
     }
@@ -55,9 +54,10 @@ public class PostServiceImpl implements PostService {
     public PostResponseDto findById(Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-        // TODO: 현재는 좋아요 수(postLike)와 댓글 수(postComment)를 null로 설정하고 있음.
-        // 추후 PostLike, Comment 데이터와 연동하여 실제 수치를 계산해 넣을 예정.
-        return new PostResponseDto(findPost, null, null); // FIXME: 좋아요/댓글 수 미연동 상태
+//        Long likeCount = postRepository.likeCount(findPost.getId());
+//        Long commentCount = postRepository.commentCount(findPost.getId());
+
+        return new PostResponseDto(findPost, 0L, 0L);
     }
 
     @Transactional
@@ -65,7 +65,7 @@ public class PostServiceImpl implements PostService {
     public UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-        // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
+
         validatePostOwner(memberId, findPost);
 
         findPost.update(requestDto.getContent(), requestDto.getImageUrl());
@@ -78,24 +78,33 @@ public class PostServiceImpl implements PostService {
     public void delete(Long memberId, Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-        // TODO: 추후에 작성자를 확인하는 인가 로직 추가 예정
         validatePostOwner(memberId, findPost);
 
         postRepository.delete(findPost);
     }
 
-    private Member findMemberByIdOrElseThrow(Long memberId) {
-        // FIXME: 현재는 임시로 ResponseStatusException 사용 중.
-        // 추후 member 도메인에서 커스텀 예외(MemberNotFoundException 등) 정의되면 교체할 것.
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @Override
+    public PostListResponseDto getFollowingFeeds(Long memberId) {
+//        // 1. 멤버 ID를 활용해서 팔로잉 아이디들 찾기
+//        List<Long> followingIds = followService.findFollowingIdsByMemberId(memberId);
+//
+//        // 2. 팔로잉이 없다면 예외 던지기
+//        if (followingIds.isEmpty()) {
+//            throw new PostFollowingsNotFoundException();
+//        }
+//
+//        postRepository.findAllById(followingIds).stream()
+//                .iterator()
+
+        return null;
     }
 
-    private Post findPostByIdOrElseThrow(Long postId) {
+    public Post findPostByIdOrElseThrow(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
     }
 
+    // 게시물 id와 멤버의 id를 비교해서 동일한지 검증하는 메서드입니다.
     private static void validatePostOwner(Long memberId, Post findPost) {
         if (!findPost.getMember().getId().equals(memberId)) {
             throw new PostUnauthorizedException();
