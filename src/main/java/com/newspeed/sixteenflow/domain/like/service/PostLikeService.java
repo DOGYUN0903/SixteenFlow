@@ -5,10 +5,9 @@ import com.newspeed.sixteenflow.domain.like.entity.PostLike;
 import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
+import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
-import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
-import com.newspeed.sixteenflow.global.exception.like.PostLikeException;
-import com.newspeed.sixteenflow.global.response.error.LikeError;
+import com.newspeed.sixteenflow.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,22 +17,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
-    private final MemberRepository memberRepository; //memberId
-    private final PostRepository postRepository; //postId
+    private final MemberRepository memberRepository; //postId
+    private final PostService postService;
+    private final MemberService memberservice;
 
     //좋아요 누르기 (toggle)/ 취소 == HardDelete, 만일 existing되어 있는경우는 좋아요가 눌러진 상태
     public PostLikeResponseDto toggleLike(Long memberId, Long postId) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostLikeException());
+        Post post = postService.findPostByIdOrElseThrow(postId);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PostLikeException());
+        Member member = memberservice.findByIdOrElseThrow(memberId);
 
 
         Optional<PostLike> isExisting = postLikeRepository.findByMemberAndPost(member, post);
 
-        boolean like; // 좋아요 필요가 있나? 명시적? 한번 확인 할것(DB에는 안들어가지 않는가)
+        boolean like; // 명시적
         if (isExisting.isPresent()) { //이미 좋아요인 경우 취소 존재하므로 isPresent가 true로 나옴.
             postLikeRepository.delete(isExisting.get());
             like = false;
@@ -46,6 +44,5 @@ public class PostLikeService {
 
         int likeCount = postLikeRepository.countByPostId(postId);
         return new PostLikeResponseDto(postId, likeCount, like);
-
     }
 }
