@@ -18,11 +18,11 @@ public class PostResponseDto {
 
     private LocalDateTime modifiedAt;
 
-    private Long postLike;
+    private Long likeCount;
 
-    private Long postComment;
+    private Long commentCount;
 
-    public PostResponseDto(Post post, Long postLike, Long postComment) {
+    public PostResponseDto(Post post, Long likeCount, Long commentCount) {
         this.id = post.getId();
         this.postMemberDto = new PostMemberDto(
                 post.getMember().getId(),
@@ -32,7 +32,7 @@ public class PostResponseDto {
         this.content = post.getContent();
         this.imageUrl = post.getImageUrl();
         this.modifiedAt = post.getModifiedAt();
-        this.postLike = postLike;
-        this.postComment = postComment;
+        this.likeCount = likeCount;
+        this.commentCount = commentCount;
     }
 }
