@@ -3,12 +3,14 @@ package com.newspeed.sixteenflow.domain.member.service;
 import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
+import com.newspeed.sixteenflow.domain.member.dto.PasswordRequestDto;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.global.config.PasswordEncoder;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -136,5 +138,21 @@ public class MemberService {
                 .phoneNumber(foundMember.getPhoneNumber())
                 .modifiedAt(foundMember.getModifiedAt())
                 .build();
+    }
+
+    @Transactional
+    public void changePassword(Long id, PasswordRequestDto passwordDto) {
+        Member foundMember = findByIdOrElseThrow(id);
+
+        if (!passwordEncoder.matches(passwordDto.getOldPassword(), foundMember.getPassword())) {
+            throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
+        }
+
+        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
+            throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
+        }
+
+        String encodedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
+        foundMember.updatePassword(encodedPassword);
     }
 }
