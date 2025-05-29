@@ -19,4 +19,6 @@ public interface PostService {
     UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto);
 
     void delete(Long memberId, Long postId);
+
+    PostListResponseDto getFollowingFeeds(Long memberId);
 }
