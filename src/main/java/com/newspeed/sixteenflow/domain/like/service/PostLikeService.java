@@ -4,7 +4,6 @@ import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.PostLike;
 import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
-import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
@@ -17,7 +16,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
-    private final MemberRepository memberRepository; //postId
     private final PostService postService;
     private final MemberService memberservice;
 
