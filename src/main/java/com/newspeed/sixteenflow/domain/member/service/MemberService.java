@@ -1,16 +1,15 @@
 package com.newspeed.sixteenflow.domain.member.service;
 
+import com.newspeed.sixteenflow.domain.member.dto.ChangePasswordRequestDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
-import com.newspeed.sixteenflow.domain.member.dto.PasswordRequestDto;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.global.config.PasswordEncoder;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -63,12 +62,12 @@ public class MemberService {
                 .build();
     }
 
-    public Member findByIdOrElseThrow(Long Id) {
-        return memberRepository.findById(Id).orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+    public Member findByIdOrElseThrow(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
     }
 
-    public MemberResponseDto findById(Long Id) {
-        Member foundMember = findByIdOrElseThrow(Id);
+    public MemberResponseDto findById(Long id) {
+        Member foundMember = findByIdOrElseThrow(id);
         // todo: 팔로우 조회
 
         // 본인 프로필 조회 시
@@ -141,7 +140,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void changePassword(Long id, PasswordRequestDto passwordDto) {
+    public void changePassword(Long id, ChangePasswordRequestDto passwordDto) {
         Member foundMember = findByIdOrElseThrow(id);
 
         if (!passwordEncoder.matches(passwordDto.getOldPassword(), foundMember.getPassword())) {
