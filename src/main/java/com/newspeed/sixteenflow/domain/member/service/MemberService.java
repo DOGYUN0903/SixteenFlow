@@ -2,11 +2,13 @@ package com.newspeed.sixteenflow.domain.member.service;
 
 import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
+import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.global.config.PasswordEncoder;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -88,6 +90,50 @@ public class MemberService {
                 .followingCount(5L)
                 .followerCount(5L)
                 .createdAt(foundMember.getCreatedAt())
+                .modifiedAt(foundMember.getModifiedAt())
+                .build();
+    }
+
+    @Transactional
+    public MemberResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
+        Member foundMember = findByIdOrElseThrow(id);
+
+        if (updateDto.getEmail() != null) {
+            if (memberRepository.existsByEmail(updateDto.getEmail())) {
+                throw new MemberException(MemberError.MEMBER_EMAIL_EXIST);
+            }
+            foundMember.updateEmail(updateDto.getEmail());
+        }
+
+        if (updateDto.getProfileImageUrl() != null) {
+            foundMember.updateProfileImageUrl(updateDto.getProfileImageUrl());
+        }
+
+        if (updateDto.getNickname() != null) {
+            if (memberRepository.existsByNickname(updateDto.getNickname())) {
+                throw new MemberException(MemberError.MEMBER_NICKNAME_EXIST);
+            }
+            foundMember.updateNickname(updateDto.getNickname());
+        }
+
+
+        if (updateDto.getPhoneNumber() != null) {
+            if (memberRepository.existsByPhoneNumber(updateDto.getPhoneNumber())) {
+                throw new MemberException(MemberError.MEMBER_PHONE_NUMBER_EXIST);
+            }
+            foundMember.updatePhoneNumber(updateDto.getPhoneNumber());
+        }
+
+        if (updateDto.getAddress() != null) {
+            foundMember.updateAddress(updateDto.getAddress());
+        }
+
+        return MemberResponseDto.builder()
+                .email(foundMember.getEmail())
+                .profileImageUrl(foundMember.getProfileImageUrl())
+                .nickname(foundMember.getNickname())
+                .address(foundMember.getAddress())
+                .phoneNumber(foundMember.getPhoneNumber())
                 .modifiedAt(foundMember.getModifiedAt())
                 .build();
     }
