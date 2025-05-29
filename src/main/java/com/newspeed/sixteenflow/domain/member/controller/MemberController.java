@@ -2,6 +2,7 @@ package com.newspeed.sixteenflow.domain.member.controller;
 
 import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
+import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.success.MemberSuccess;
@@ -28,5 +29,9 @@ public class MemberController {
         return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.findById(memberId));
     }
 
+    @PatchMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> update(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateRequestDto updateDto) {
+        return ApiResponse.status(MemberSuccess.MEMBER_UPDATE_PROFILE).body(memberService.update(memberId, updateDto));
+    }
 
 }
