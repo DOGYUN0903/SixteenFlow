@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT COUNT(p) FROM PostLike p where p.post.id = :postId")
-    Long likeCount(@Param("postId") Long postId);
-
-    @Query("SELECT COUNT(c) FROM Comment c where c.post.id = :postId")
-    Long commentCount(@Param("postId") Long postId);
+//    @Query("SELECT COUNT(p) FROM PostLike p where p.post.id = :postId")
+//    Long likeCount(@Param("postId") Long postId);
+//
+//    @Query("SELECT COUNT(c) FROM Comment c where c.post.id = :postId")
+//    Long commentCount(@Param("postId") Long postId);
 
 
 }

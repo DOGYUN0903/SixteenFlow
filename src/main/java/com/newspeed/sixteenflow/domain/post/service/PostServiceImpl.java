@@ -1,6 +1,7 @@
 package com.newspeed.sixteenflow.domain.post.service;
 
 import com.newspeed.sixteenflow.domain.member.entity.Member;
+import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
@@ -9,7 +10,6 @@ import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
-import com.newspeed.sixteenflow.global.exception.post.PostFollowingsNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostUnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final MemberService memberService;
-    private final FollowService followService;
+//    private final FollowService followService;
 
     @Transactional
     @Override
     public CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto) {
-        Member findMember = memberService.findById(memberId);
+        Member findMember = memberService.findByIdOrElseThrow(memberId);
 
         Post post = new Post(
                 requestDto.getContent(),
@@ -44,8 +44,8 @@ public class PostServiceImpl implements PostService {
     public PostListResponseDto findAll() {
         List<PostResponseDto> postDto = postRepository.findAll().stream()
                 .map(post -> new PostResponseDto(post,
-                        postRepository.likeCount(post.getId()),
-                        postRepository.commentCount(post.getId())))
+                        0L,
+                        0L))
                 .toList();
         return new PostListResponseDto(postDto);
     }
@@ -54,10 +54,10 @@ public class PostServiceImpl implements PostService {
     public PostResponseDto findById(Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-        Long likeCount = postRepository.likeCount(findPost.getId());
-        Long commentCount = postRepository.commentCount(findPost.getId());
+//        Long likeCount = postRepository.likeCount(findPost.getId());
+//        Long commentCount = postRepository.commentCount(findPost.getId());
 
-        return new PostResponseDto(findPost, likeCount, commentCount);
+        return new PostResponseDto(findPost, 0L, 0L);
     }
 
     @Transactional
@@ -85,21 +85,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostListResponseDto getFollowingFeeds(Long memberId) {
-        // 1. 멤버 ID를 활용해서 팔로잉 아이디들 찾기
-        List<Long> followingIds = followService.findFollowingIdsByMemberId(memberId);
-
-        // 2. 팔로잉이 없다면 예외 던지기
-        if (followingIds.isEmpty()) {
-            throw new PostFollowingsNotFoundException();
-        }
-
-        postRepository.findAllById(followingIds).stream()
-                .iterator()
+//        // 1. 멤버 ID를 활용해서 팔로잉 아이디들 찾기
+//        List<Long> followingIds = followService.findFollowingIdsByMemberId(memberId);
+//
+//        // 2. 팔로잉이 없다면 예외 던지기
+//        if (followingIds.isEmpty()) {
+//            throw new PostFollowingsNotFoundException();
+//        }
+//
+//        postRepository.findAllById(followingIds).stream()
+//                .iterator()
 
         return null;
     }
 
-    private Post findPostByIdOrElseThrow(Long postId) {
+    public Post findPostByIdOrElseThrow(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
     }
