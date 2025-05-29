@@ -10,7 +10,7 @@ public class MemberRequestDto {
     @NotBlank
     @Email
     private final String email;
-    private String profileImageUrl = "https://example.com/images/guestProfileImage.jpg";
+    private final String profileImageUrl;
     @NotBlank
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\[{\\]};:'\",<.>/?]).{8,}$",

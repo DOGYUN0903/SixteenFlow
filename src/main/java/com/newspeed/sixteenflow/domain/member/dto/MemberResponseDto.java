@@ -1,5 +1,6 @@
 package com.newspeed.sixteenflow.domain.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,9 @@ public class MemberResponseDto {
     private final String nickname;
     private final String address;
     private final String phoneNumber;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime modifiedAt;
     private final Long followingCount;
     private final Long followerCount;
