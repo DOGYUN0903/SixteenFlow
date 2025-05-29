@@ -18,8 +18,9 @@ public class MemberService {
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
+        String profileImageUrl = (requestDto.getProfileImageUrl() == null)
+                ? "https://example.com/images/guestProfileImage.jpg" : requestDto.getProfileImageUrl();
 
-        // 이메일은 유니크 키 이므로 중복불가
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new MemberException(MemberError.MEMBER_EMAIL_EXIST);
         }
@@ -28,7 +29,7 @@ public class MemberService {
             throw new MemberException(MemberError.MEMBER_NICKNAME_EXIST);
         }
 
-        if (memberRepository.existsByPhoneNumber(phoneNumber) && phoneNumber == null) {
+        if (memberRepository.existsByPhoneNumber(phoneNumber) && phoneNumber != null) {
             throw new MemberException(MemberError.MEMBER_PHONE_NUMBER_EXIST);
         }
 
@@ -36,7 +37,7 @@ public class MemberService {
 
         Member member = Member.builder()
                 .email(requestDto.getEmail())
-                .profileImageUrl(requestDto.getProfileImageUrl())
+                .profileImageUrl(profileImageUrl)
                 .address(requestDto.getAddress())
                 .username(requestDto.getUsername())
                 .nickname(requestDto.getNickname())
@@ -49,7 +50,7 @@ public class MemberService {
         return MemberResponseDto.builder()
                 .id(SavedMember.getId())
                 .email(SavedMember.getEmail())
-                .profileImageUrl(SavedMember.getProfileImageUrl())
+                .profileImageUrl(profileImageUrl)
                 .username(SavedMember.getUsername())
                 .nickname(SavedMember.getNickname())
                 .address(SavedMember.getAddress())
