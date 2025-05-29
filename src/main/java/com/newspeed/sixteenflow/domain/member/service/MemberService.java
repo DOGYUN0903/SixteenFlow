@@ -47,4 +47,33 @@ public class MemberService {
                 .createdAt(SavedMember.getCreatedAt())
                 .build();
     }
+
+    public MemberResponseDto findMemberById(Long memberId) {
+        Member foundMember = memberRepository.findMemberByIdOrElseThrow(memberId);
+        // todo: 팔로우 조회
+
+        // 본인 프로필 조회 시
+//        return MemberResponseDto.builder()
+//                .email(foundMember.getEmail())
+//                .profileImageUrl(foundMember.getProfileImageUrl())
+//                .username(foundMember.getUsername())
+//                .nickname(foundMember.getNickname())
+//                .address(foundMember.getAddress())
+//                .phoneNumber(foundMember.getPhoneNumber())
+//                .followingCount(5L)
+//                .followerCount(5L)
+//                .createdAt(foundMember.getCreatedAt())
+//                .modifiedAt(foundMember.getModifiedAt())
+//                .build();
+
+        // 타인 프로필 조회 시
+        return MemberResponseDto.builder()
+                .profileImageUrl(foundMember.getProfileImageUrl())
+                .nickname(foundMember.getNickname())
+                .followingCount(5L)
+                .followerCount(5L)
+                .createdAt(foundMember.getCreatedAt())
+                .modifiedAt(foundMember.getModifiedAt())
+                .build();
+    }
 }

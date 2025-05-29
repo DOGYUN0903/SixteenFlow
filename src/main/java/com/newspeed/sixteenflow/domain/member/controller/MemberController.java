@@ -8,10 +8,7 @@ import com.newspeed.sixteenflow.global.response.success.MemberSuccess;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,6 +21,12 @@ public class MemberController {
         return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.createMember(requestDto));
     }
 
+    //todo: 로그인, 로그아웃
+
+    @GetMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> findMemberById(@PathVariable Long memberId) {
+        return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.findMemberById(memberId));
+    }
 
 
 }
