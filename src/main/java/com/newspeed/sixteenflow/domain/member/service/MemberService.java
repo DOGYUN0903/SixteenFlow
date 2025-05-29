@@ -1,9 +1,6 @@
 package com.newspeed.sixteenflow.domain.member.service;
 
-import com.newspeed.sixteenflow.domain.member.dto.ChangePasswordRequestDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
+import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.global.config.PasswordEncoder;
@@ -153,5 +150,16 @@ public class MemberService {
 
         String encodedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
         foundMember.updatePassword(encodedPassword);
+    }
+
+    @Transactional
+    public void delete(Long id, MemberDeleteRequestDto deleteDto) {
+        Member foundMember = findByIdOrElseThrow(id);
+
+        if (!passwordEncoder.matches(deleteDto.getPassword(), foundMember.getPassword())) {
+            throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
+        }
+
+        foundMember.delete();
     }
 }
