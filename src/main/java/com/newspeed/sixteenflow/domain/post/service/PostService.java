@@ -6,8 +6,6 @@ import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
-import com.newspeed.sixteenflow.domain.post.entity.Post;
-import jakarta.validation.Valid;
 
 public interface PostService {
     CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto);
