@@ -17,15 +17,15 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody MemberRequestDto requestDto) {
-        return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.createMember(requestDto));
+    public ResponseEntity<ApiResponse<MemberResponseDto>> create(@Valid @RequestBody MemberRequestDto requestDto) {
+        return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.create(requestDto));
     }
 
     //todo: 로그인, 로그아웃
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> findMemberById(@PathVariable Long memberId) {
-        return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.findMemberById(memberId));
+    public ResponseEntity<ApiResponse<MemberResponseDto>> findById(@PathVariable Long memberId) {
+        return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.findById(memberId));
     }
 
 

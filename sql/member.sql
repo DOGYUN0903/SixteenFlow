@@ -7,7 +7,7 @@ CREATE TABLE member (
                         username VARCHAR(100),
                         address VARCHAR(255),
                         phone_number VARCHAR(255) UNIQUE,
-                        profile_image_url VARCHAR(500) DEFAULT 'https://example.com/images/guestImage1.jpg',
+                        profile_image_url VARCHAR(500),
                         is_deleted BOOLEAN,
                         created_at DATETIME,
                         modified_at DATETIME

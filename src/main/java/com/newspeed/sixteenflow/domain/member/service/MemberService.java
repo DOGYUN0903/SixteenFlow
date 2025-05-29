@@ -16,10 +16,20 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberResponseDto createMember(MemberRequestDto requestDto) {
+    public MemberResponseDto create(MemberRequestDto requestDto) {
+        String phoneNumber = requestDto.getPhoneNumber();
+
         // 이메일은 유니크 키 이므로 중복불가
-        if (memberRepository.existsMemberByEmail(requestDto.getEmail())) {
+        if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new MemberException(MemberError.MEMBER_EMAIL_EXIST);
+        }
+
+        if (memberRepository.existsByNickname(requestDto.getNickname())) {
+            throw new MemberException(MemberError.MEMBER_NICKNAME_EXIST);
+        }
+
+        if (memberRepository.existsByPhoneNumber(phoneNumber) && phoneNumber == null) {
+            throw new MemberException(MemberError.MEMBER_PHONE_NUMBER_EXIST);
         }
 
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -31,7 +41,7 @@ public class MemberService {
                 .username(requestDto.getUsername())
                 .nickname(requestDto.getNickname())
                 .password(encodedPassword)
-                .phoneNumber(requestDto.getPhoneNumber())
+                .phoneNumber(phoneNumber)
                 .build();
 
         Member SavedMember = memberRepository.save(member);
@@ -48,8 +58,12 @@ public class MemberService {
                 .build();
     }
 
-    public MemberResponseDto findMemberById(Long memberId) {
-        Member foundMember = memberRepository.findMemberByIdOrElseThrow(memberId);
+    public Member findByIdOrElseThrow(Long Id) {
+        return memberRepository.findById(Id).orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+    }
+
+    public MemberResponseDto findById(Long Id) {
+        Member foundMember = findByIdOrElseThrow(Id);
         // todo: 팔로우 조회
 
         // 본인 프로필 조회 시
