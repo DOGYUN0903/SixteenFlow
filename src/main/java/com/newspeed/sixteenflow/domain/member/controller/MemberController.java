@@ -1,9 +1,6 @@
 package com.newspeed.sixteenflow.domain.member.controller;
 
-import com.newspeed.sixteenflow.domain.member.dto.ChangePasswordRequestDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberResponseDto;
-import com.newspeed.sixteenflow.domain.member.dto.MemberUpdateRequestDto;
+import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.success.MemberSuccess;
@@ -39,5 +36,11 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> changePassword(@PathVariable Long memberId, @Valid @RequestBody ChangePasswordRequestDto passwordDto) {
         memberService.changePassword(memberId, passwordDto);
         return ApiResponse.status(MemberSuccess.MEMBER_UPDATE_PASSWORD).body();
+    }
+
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long memberId, @Valid @RequestBody MemberDeleteRequestDto deleteDto) {
+        memberService.delete(memberId, deleteDto);
+        return ApiResponse.status(MemberSuccess.MEMBER_WITHDRAW).body();
     }
 }
