@@ -1,6 +1,5 @@
 package com.newspeed.sixteenflow.domain.post.service;
 
-import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
@@ -21,7 +20,7 @@ public interface PostService {
 
     void delete(Long memberId, Long postId);
 
-    PostListResponseDto getFollowingFeeds(Long memberId);
-
     Post findPostByIdOrElseThrow(Long postId);
+
+    PageResponse<PostResponseDto> findFollowingFeeds(Long memberId, Pageable pageable);
 }
