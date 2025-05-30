@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResponse<PostResponseDto> findAll(Pageable pageable) {
         Page<PostResponseDto> postResponseDtoPage = postRepository.findAll(pageable)
-                .map(post -> new PostResponseDto(post, 0L, 0L));
+                .map(post -> new PostResponseDto(post, postRepository.likeCount(post.getId()), 0L));
 
         return new PageResponse<>(postResponseDtoPage);
     }
