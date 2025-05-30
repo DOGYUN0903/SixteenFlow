@@ -1,7 +1,6 @@
 package com.newspeed.sixteenflow.domain.comments.service;
-import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
+import com.newspeed.sixteenflow.domain.comments.dto.CommentResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
-import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.entity.Comment;
 import com.newspeed.sixteenflow.domain.comments.repository.CommentRepository;
@@ -9,11 +8,11 @@ import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.exception.comment.CommentException;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.CommentError;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public class CommentService {
     /**
      * 댓글  생성
      */
-    public CommnetResponse createComment(Long postId, Long memberId, CreateCommentRequest createRequest){
+    public CommentResponse createComment(Long postId, Long memberId, CreateCommentRequest createRequest){
         //1. 게시글 조회
         Member foundMember = memberService.findByIdOrElseThrow(memberId); //알아서 예외처리
         Post foundPost = postService.findPostByIdOrElseThrow(postId); //알아서 예외처리
@@ -65,34 +64,31 @@ public class CommentService {
         Comment savedComment = commentRepository.save(newComment);
 
         //5.  DTO 반환
-        return new CommnetResponse(savedComment);
+        return new CommentResponse(savedComment);
     }
 
     /**
      * 게시글 댓글 전체 조회
      */
-//
-
-
-
-    public  Page<CommenReadListResponse> findAllComments(Long postId, Pageable pageable){
+    public  PageResponse<CommentResponse> findAllComments(Long postId, Pageable pageable){
 
         //null값 예외 처리
-        postService.findPostByIdOrElseThrow(postId); //포스트 아이디 오류 처리를 위함
-        //1.게시글 조회
-        List<Comment> foundByPostId = commentRepository.findByPostId(postId);
+        Post findPost = postService.findPostByIdOrElseThrow(postId);//포스트 아이디 오류 처리를 위함
+//1.게시글 조회
+        List <Comment> foundByPostId = commentRepository.findByPostId(findPost.getId());
 
         //객체를 담을 리스트 초기화
-        List <CommenReadListResponse> getCommentList = new ArrayList<>();
+        List <CommentResponse> getCommentList = new ArrayList<>();
 
         for (Comment getOneComment : foundByPostId){
-            getCommentList.add(new CommenReadListResponse(getOneComment));
+            getCommentList.add(new CommentResponse(getOneComment));
         }
         // 3. 페이징 처리된 댓글 조회
-        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
-        // 4. 엔티티 → DTO로 변환
-        return commentPage.map(CommenReadListResponse::new);
+        Page<Comment> commentPage = commentRepository.findPageByPostId(postId, pageable);
+        Page<CommentResponse> map = commentPage.map(CommentResponse::new);
 
+        // 4. 엔티티 → DTO로 변환
+        return  new PageResponse<>(map);
     }
 
 
@@ -100,12 +96,12 @@ public class CommentService {
     /**
      * 게시글 댓글 단건 조회
      */
-    public CommnetResponse findComment(Long id){
+    public CommentResponse findComment(Long id){
         //1. 게시글 조회
         Comment comment = findByIdOrElseThrow(id);
 
         //2.리스폰디티오에 담아서 반환
-       return new CommnetResponse(comment);
+       return new CommentResponse(comment);
     }
 
     public Comment findByIdOrElseThrow(Long id) {
@@ -116,7 +112,7 @@ public class CommentService {
     /**
      *  댓글 수정
      */
-    public CommnetResponse updateComment(Long id, Long memberId, UpdateCommentRequest updateRequest){
+    public CommentResponse updateComment(Long id, Long memberId, UpdateCommentRequest updateRequest){
         Comment findComment = findByIdOrElseThrow(id);
 
         Long commentWriterId = findComment.getMember().getId();
@@ -138,7 +134,7 @@ public class CommentService {
         commentRepository.save(findComment);
 
         //반환
-        return new CommnetResponse(findComment);
+        return new CommentResponse(findComment);
     }
 
     /**
