@@ -29,7 +29,7 @@ public class PostController {
         // TODO: 인증 방식 결정 후 로그인 유저의 memberId 주입 로직 추가 예정
         // ex) @AuthenticationPrincipal Long memberId (Spring Security 사용 시)
         return ApiResponse.status(PostSuccess.POST_CREATED)
-                .body(postService.create(7L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
+                .body(postService.create(1L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
     }
 
     /**

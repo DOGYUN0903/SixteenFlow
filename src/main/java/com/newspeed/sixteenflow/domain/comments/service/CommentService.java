@@ -7,11 +7,17 @@ import com.newspeed.sixteenflow.domain.comments.entity.Comment;
 import com.newspeed.sixteenflow.domain.comments.repository.CommentRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
+import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
+import com.newspeed.sixteenflow.domain.post.service.PostService;
+import com.newspeed.sixteenflow.global.exception.commnet.CommentException;
+import com.newspeed.sixteenflow.global.response.error.CommentError;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +25,20 @@ import java.util.Optional;
 @Service
 public class CommentService {
     //속성
-    private final CommentRepository commentRepostiory;
+    private final CommentRepository commentRepository;
 
-    private final PostRepository postRepository;
+    private final PostService postService;
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+
 
 
     //생성자
 
-    public CommentService(CommentRepository commentRepostiory, PostRepository postRepository, MemberRepository memberRepository) {
-        this.commentRepostiory = commentRepostiory;
-        this.postRepository = postRepository;
-        this.memberRepository = memberRepository;
+    public CommentService(CommentRepository commentRepository, PostService postService, MemberService memberService) {
+        this.commentRepository = commentRepository;
+        this.postService = postService;
+        this.memberService = memberService;
     }
 
 
@@ -40,51 +47,57 @@ public class CommentService {
     /**
      * 댓글  생성
      */
-    public Response createComment(Long postId, CreateCommentRequest createRequest){
+    public Response createComment(Long postId,Long memberId,  CreateCommentRequest createRequest){
         //1. 게시글 조회
-        Post foundPost = postRepository.findById(createRequest.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        Member foundMember = memberService.findByIdOrElseThrow(memberId); //알아서 예외처리
+        Post foundPost = postService.findPostByIdOrElseThrow(postId); //알아서 예외처리
 
 
         //2. 댓글 생성
         String toWriteContent = createRequest.getContent();
-        Member foundMember = memberRepository.findById(createRequest.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
+        if(toWriteContent ==null || toWriteContent.equals("")){
+            throw new CommentException(CommentError.COMMENT_CONTENT_EMPTY);
+        }
 
         Comment newComment = new Comment(toWriteContent, foundMember, foundPost );
 
-        //3. Post에 댓글 추가, 다른 파트 확인 후 코드 수정 예정
-
-//        post.getComments().add(newComment); // Post 엔티티에 comment가 리스트로 존재해야 하는 건 아닌지?
-
         //4. 저장
-        Comment savedComment = commentRepostiory.save(newComment);
+        Comment savedComment = commentRepository.save(newComment);
 
         //5.  DTO 반환
-
         return new Response(savedComment);
     }
 
     /**
      * 게시글 댓글 전체 조회
      */
-//    public List<Comment> findAllComments(Long postId){
-//        //1.게시글 조회
-//        Post foundPost =postRepository.findById(postId)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-//
-//        //2. 게시글 내 댓글 리스트 게터로 받아오기
-//         return foundPost.getListComments(); //post에서 comment 리스트를 만들어주고 게터 생성 필요
-//    }
+    public  List<Response> findAllComments(Long postId){
+
+        //null값 예외 처리
+        postService.findPostByIdOrElseThrow(postId); //포스트 아이디 오류 처리를 위함
+        //1.게시글 조회
+        List<Comment> foundByPostId = commentRepository.findByPostId(postId);
+
+
+        //객체를 담을 배열 초기화
+        List <Response> getCommentList = new ArrayList<>();
+
+        for (Comment getOneComment : foundByPostId){
+            getCommentList.add(new Response(getOneComment));
+        }
+        return getCommentList;
+    }
+
+
 
     /**
      * 게시글 댓글 단건 조회
      */
     public Response findComment(Long id){
         //1. 게시글 조회
-        Comment comment = commentRepostiory.findById(id)
-                .orElseThrow();
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
 
         //2.리스폰디티오에 담아서 반환
        return new Response(comment);
@@ -93,16 +106,26 @@ public class CommentService {
     /**
      *  댓글 수정
      */
-
-
     public Response updateComment(Long id, UpdateCommentRequest updateRequest){
-        Comment findOne = commentRepostiory.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+        Comment findOne = commentRepository.findById(id)
+                .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
 
+        //업데이트할 내용
+        String updateContent = updateRequest.getContent();
+
+        if( updateContent ==null || updateContent.equals("")){
+            throw new CommentException(CommentError.COMMENT_CONTENT_EMPTY);
+        }
+
+        if (updateContent.equals(findOne.getContent())){
+            throw new CommentException(CommentError.COMMNET_UPDATE_COMMENT_SAME);
+        }
         findOne.changeContent(updateRequest.getContent());
 
-        commentRepostiory.save(findOne);
+        //저장
+        commentRepository.save(findOne);
 
+        //반환
         return new Response(findOne);
     }
 
@@ -110,10 +133,17 @@ public class CommentService {
      * 댓글 삭제
      */
     public void deleteComment(Long id){
-        Comment toDelete = commentRepostiory.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
-        toDelete.getMember().getId();
-        commentRepostiory.delete(toDelete);
+        Comment toDelete = commentRepository.findById(id)
+                .orElseThrow(() -> new CommentException(CommentError.COMMENT_DELETE_NOT_FOUND));
+
+        // 내가 작성한 댓글만 삭제할 수 있는 로직
+//        toDelete.getMember().getId();
+        toDelete.getMember().getId(); //현재 댓글의 작성자 id
+
+        commentRepository.delete(toDelete);
+
     }
+
+
 }
 

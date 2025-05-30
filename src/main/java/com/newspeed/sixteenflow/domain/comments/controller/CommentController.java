@@ -20,7 +20,6 @@ public class CommentController {
     //속성
     private final CommentService commentService;
 
-
     //생성자
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
@@ -34,9 +33,10 @@ public class CommentController {
     public  ResponseEntity<ApiResponse<Response>>  createComment(
             @PathVariable Long postId,
             @Validated  @RequestBody CreateCommentRequest createRequest
+
             ){
 
-        Response createResponse = commentService.createComment(postId, createRequest);
+        Response createResponse = commentService.createComment(postId,1L, createRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_CREATED).body(createResponse);
     }
 
@@ -44,8 +44,8 @@ public class CommentController {
      * 한 페이지 내 댓글 전체 조회
      */
     @GetMapping("/posts/{postId}/comments")
-    public  ResponseEntity<ApiResponse<List<Comment>>> findAllComments(@PathVariable Long postId){
-         List <Comment> foundCommentList= commentService.findAllComments(postId);
+    public  ResponseEntity<ApiResponse<List<Response>>> findAllComments(@PathVariable Long postId){
+         List <Response> foundCommentList= commentService.findAllComments(postId);
         return ApiResponse.status(CommentSucceess.COMMENT_READ_ALL).body(foundCommentList);
     }
 
@@ -71,7 +71,6 @@ public class CommentController {
 
         Response updatedOne = commentService.updateComment(id, updateRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_UPDATED).body(updatedOne);
-
     }
 
     /**

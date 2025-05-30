@@ -4,6 +4,7 @@ import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 
@@ -16,12 +17,6 @@ public class Comment extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
-
-    @Column(nullable = false)
-    private Long postId;
-
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -30,15 +25,16 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column
+    @Column @NotBlank
     private String content;
 
 //    생성자
+    public Comment(){}
+
     public Comment( String content, Member member, Post post) {
         this.content = content;
         this.member = member;
         this.post = post;
-
 
     }
 
