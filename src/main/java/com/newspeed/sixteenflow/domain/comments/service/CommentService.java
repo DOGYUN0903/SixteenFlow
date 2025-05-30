@@ -1,5 +1,6 @@
 package com.newspeed.sixteenflow.domain.comments.service;
 
+//import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
@@ -13,6 +14,8 @@ import com.newspeed.sixteenflow.global.exception.comment.CommentException;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.CommentError;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
+import org.apache.coyote.Response;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -69,6 +72,10 @@ public class CommentService {
     /**
      * 게시글 댓글 전체 조회
      */
+//
+
+
+
     public  List<CommnetResponse> findAllComments(Long postId){
 
         //null값 예외 처리
@@ -99,7 +106,7 @@ public class CommentService {
        return new CommnetResponse(comment);
     }
 
-    private Comment findByIdOrElseThrow(Long id) {
+    public Comment findByIdOrElseThrow(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
     }
