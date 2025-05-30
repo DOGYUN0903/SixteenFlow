@@ -1,5 +1,4 @@
 package com.newspeed.sixteenflow.domain.comments.service;
-
 import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
@@ -76,21 +75,24 @@ public class CommentService {
 
 
 
-    public  List<CommnetResponse> findAllComments(Long postId){
+    public  Page<CommenReadListResponse> findAllComments(Long postId, Pageable pageable){
 
         //null값 예외 처리
         postService.findPostByIdOrElseThrow(postId); //포스트 아이디 오류 처리를 위함
         //1.게시글 조회
         List<Comment> foundByPostId = commentRepository.findByPostId(postId);
 
-
-        //객체를 담을 배열 초기화
-        List <CommnetResponse> getCommentList = new ArrayList<>();
+        //객체를 담을 리스트 초기화
+        List <CommenReadListResponse> getCommentList = new ArrayList<>();
 
         for (Comment getOneComment : foundByPostId){
-            getCommentList.add(new CommnetResponse(getOneComment));
+            getCommentList.add(new CommenReadListResponse(getOneComment));
         }
-        return getCommentList;
+        // 3. 페이징 처리된 댓글 조회
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+        // 4. 엔티티 → DTO로 변환
+        return commentPage.map(CommenReadListResponse::new);
+
     }
 
 

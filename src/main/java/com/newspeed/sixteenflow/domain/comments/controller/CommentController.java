@@ -1,12 +1,17 @@
 package com.newspeed.sixteenflow.domain.comments.controller;
 
 
+import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.success.CommentSucceess;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +37,7 @@ public class CommentController {
             @PathVariable Long postId,
             @Validated  @RequestBody CreateCommentRequest createRequest
 
+
             ){
         Long memberId=1L;
         CommnetResponse createResponse = commentService.createComment(postId, memberId, createRequest);
@@ -42,9 +48,18 @@ public class CommentController {
      * 한 페이지 내 댓글 전체 조회
      */
     @GetMapping("/posts/{postId}/comments")
-    public  ResponseEntity<ApiResponse<List<CommnetResponse>>> findAllComments(@PathVariable Long postId){
-         List <CommnetResponse> foundCommentList= commentService.findAllComments(postId);//오타
-        return ApiResponse.status(CommentSucceess.COMMENT_READ_ALL).body(foundCommentList);
+    public  ResponseEntity<ApiResponse<List<CommenReadListResponse>>> findAllComments(
+            @PathVariable Long postId,
+    @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+
+        //pageable을 요청 변수로 받아줘야, 페이지가 넘겨짐
+        Page <CommenReadListResponse> commentPageList= commentService.findAllComments(postId,pageable);
+
+         //리스트로 변환하는 이유 : 좀 더 예쁘게, 필요한 것들만 출력하기 위함
+        //페이지 이동 하기-> 매핑 주소 끝자리 부터 ?page={숫자}  ,페이지 숫자는 0부터 시작
+        List<CommenReadListResponse> foundContent = commentPageList.getContent();
+
+        return ApiResponse.status(CommentSucceess.COMMENT_READ_ALL).body(foundContent);
     }
 
     /**
