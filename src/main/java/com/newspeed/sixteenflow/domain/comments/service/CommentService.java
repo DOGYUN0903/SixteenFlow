@@ -1,6 +1,6 @@
 package com.newspeed.sixteenflow.domain.comments.service;
 
-import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
+//import com.newspeed.sixteenflow.domain.comments.dto.CommenReadListResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
