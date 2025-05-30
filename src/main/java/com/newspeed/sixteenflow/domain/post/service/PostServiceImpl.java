@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResponse<PostResponseDto> findAll(Pageable pageable) {
         Page<PostResponseDto> postResponseDtoPage = postRepository.findAll(pageable)
-                .map(post -> new PostResponseDto(post, postRepository.likeCount(post.getId()), 0L));
+                .map(post -> new PostResponseDto(post, getLikeCount(post), getCommentCount(post)));
 
         return new PageResponse<>(postResponseDtoPage);
     }
@@ -55,10 +54,7 @@ public class PostServiceImpl implements PostService {
     public PostResponseDto findById(Long postId) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-//        Long likeCount = postRepository.likeCount(findPost.getId());
-//        Long commentCount = postRepository.commentCount(findPost.getId());
-
-        return new PostResponseDto(findPost, 0L, 0L);
+        return new PostResponseDto(findPost, getLikeCount(findPost), getCommentCount(findPost));
     }
 
     @Transactional
@@ -110,6 +106,14 @@ public class PostServiceImpl implements PostService {
         if (!findPost.getMember().getId().equals(memberId)) {
             throw new PostUnauthorizedException();
         }
+    }
+
+    private Long getCommentCount(Post post) {
+        return postRepository.commentCount(post.getId());
+    }
+
+    private Long getLikeCount(Post post) {
+        return postRepository.likeCount(post.getId());
     }
 
 }
