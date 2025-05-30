@@ -7,11 +7,13 @@ import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
+import com.newspeed.sixteenflow.global.common.PageResponse;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
     CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto);
 
-    PostListResponseDto findAll();
+    PageResponse<PostResponseDto> findAll(Pageable pageable);
 
     PostResponseDto findById(Long postId);
 

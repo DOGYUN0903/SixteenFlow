@@ -8,9 +8,11 @@ import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.response.success.PostSuccess;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +38,10 @@ public class PostController {
      * 게시글 전체 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PostListResponseDto>> findAll() {
+    public ResponseEntity<ApiResponse<PageResponse<PostResponseDto>>> findAll(Pageable pageable) {
         return ApiResponse.status(PostSuccess.POST_FOUND)
-                .body(postService.findAll());
+                .body(postService.findAll(pageable));
     }
-
     /**
      * 게시글 단건 조회
      */
