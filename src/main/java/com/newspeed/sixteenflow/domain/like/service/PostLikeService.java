@@ -1,6 +1,8 @@
 package com.newspeed.sixteenflow.domain.like.service;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
+import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
+import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchListResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.PostLike;
 import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
@@ -10,6 +12,7 @@ import com.newspeed.sixteenflow.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,8 +25,9 @@ public class PostLikeService {
     //좋아요 누르기 (toggle)/ 취소 == HardDelete, 만일 existing되어 있는경우는 좋아요가 눌러진 상태
     public PostLikeResponseDto toggleLike(Long memberId, Long postId) {
 
-        Post post = postService.findPostByIdOrElseThrow(postId);
+    // TODO: JWT의 사용자 ID와 넘어온 memberId가 일치하는지 확인
 
+        Post post = postService.findPostByIdOrElseThrow(postId);
         Member member = memberservice.findByIdOrElseThrow(memberId);
 
 
@@ -43,4 +47,14 @@ public class PostLikeService {
         int likeCount = postLikeRepository.countByPostId(postId);
         return new PostLikeResponseDto(postId, likeCount, like);
     }
+
+    //좋아요 전체 조회기능 구현
+    public PostLikeSearchListResponseDto getLikedMembersByPost(Long postId) {
+        Post post = postService.findPostByIdOrElseThrow(postId);
+
+        List<PostLikeSearchDetailDto> likedMembers = postLikeRepository.findAllLikedMembersByPostId(postId);
+        int likeCount = postLikeRepository.countByPostId(postId);
+        return new PostLikeSearchListResponseDto(postId, likeCount, likedMembers);
+    }
+
 }
