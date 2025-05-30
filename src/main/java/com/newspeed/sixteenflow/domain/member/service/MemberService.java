@@ -10,8 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -61,12 +59,12 @@ public class MemberService {
     }
 
     public Member findByIdOrElseThrow(Long id) {
-        Optional<Member> foundMember = memberRepository.findByIdAndIsDeleted(id, false);
-        return foundMember.orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
     }
 
     public MemberResponseDto findById(Long id) {
-        Member foundMember = findByIdOrElseThrow(id);
+        Member foundMember = findActiveMemberOrThrow(id);
         // todo: 팔로우 조회
 
         // 본인 프로필 조회 시
@@ -96,7 +94,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        Member foundMember = findActiveMemberOrThrow(id);
 
         updateEmailIfValid(foundMember, updateDto.getEmail());
         updateProfileImageUrlIfValid(foundMember, updateDto.getProfileImageUrl());
@@ -116,14 +114,14 @@ public class MemberService {
 
     @Transactional
     public void changePassword(Long id, ChangePasswordRequestDto passwordDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
+            throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
+        }
+
+        Member foundMember = findActiveMemberOrThrow(id);
 
         if (!passwordEncoder.matches(passwordDto.getOldPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
-        }
-
-        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
-            throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
         }
 
         foundMember.updatePassword(passwordEncoder.encode(passwordDto.getNewPassword()));
@@ -131,13 +129,25 @@ public class MemberService {
 
     @Transactional
     public void delete(Long id, MemberDeleteRequestDto deleteDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        Member foundMember = findActiveMemberOrThrow(id);
 
         if (!passwordEncoder.matches(deleteDto.getPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
         }
 
         foundMember.delete();
+
+        // todo: 로그아웃
+    }
+
+    private Member findActiveMemberOrThrow(Long id) {
+        Member foundMember = findByIdOrElseThrow(id);
+
+        if(foundMember.isDeleted()) {
+            throw new MemberException(MemberError.MEMBER_DELETED);
+        }
+
+        return foundMember;
     }
 
     private void updateAddressIfValid(Member foundMember, String address) {
