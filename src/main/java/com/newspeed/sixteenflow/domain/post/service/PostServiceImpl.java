@@ -11,8 +11,11 @@ import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
 import com.newspeed.sixteenflow.global.common.PageResponse;
+import com.newspeed.sixteenflow.global.exception.member.MemberException;
+import com.newspeed.sixteenflow.global.exception.post.PostFollowingsNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostUnauthorizedException;
+import com.newspeed.sixteenflow.global.response.error.MemberError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,30 +85,33 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostListResponseDto getFollowingFeeds(Long memberId) {
-//        // 1. 멤버 ID를 활용해서 팔로잉 아이디들 찾기
-//        List<Long> followingIds = followService.findFollowingIdsByMemberId(memberId);
-//
-//        // 2. 팔로잉이 없다면 예외 던지기
-//        if (followingIds.isEmpty()) {
-//            throw new PostFollowingsNotFoundException();
-//        }
-//
-//        postRepository.findAllById(followingIds).stream()
-//                .iterator()
+    public PageResponse<PostResponseDto> findFollowingFeeds(Long memberId, Pageable pageable) {
+        List<Long> followingIds = followService.findFollwingIds(memberId);
 
-        return null;
+        if (followingIds.isEmpty()) {
+            throw new PostFollowingsNotFoundException();
+        }
+
+        // TODO : 팔로잉한 사람의 게시물을 가져오는 로직 구현해야함
+        Page<Post> postsByFollowingIds = postRepository.findPostsByFollowingIds(followingIds, pageable);
+
+        Page<PostResponseDto> postResponseDtoPage = postsByFollowingIds.map(post -> new PostResponseDto(post, getLikeCount(post), getCommentCount(post)));
+
+
+        return new PageResponse<>(postResponseDtoPage);
     }
 
     public Post findPostByIdOrElseThrow(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new PostNotFoundException());
     }
+
+
 
     // 게시물 id와 멤버의 id를 비교해서 동일한지 검증하는 메서드입니다.
     private static void validatePostOwner(Long memberId, Post findPost) {
         if (!findPost.getMember().getId().equals(memberId)) {
-            throw new PostUnauthorizedException();
+            throw new MemberException(MemberError.MEMBER_UNAUTHORIZED);
         }
     }
 
