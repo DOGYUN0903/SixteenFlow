@@ -44,8 +44,8 @@ public class PostServiceImpl implements PostService {
     public PostListResponseDto findAll() {
         List<PostResponseDto> postDto = postRepository.findAll().stream()
                 .map(post -> new PostResponseDto(post,
-                        0L,
-                        0L))
+                        getLikeCount(post),
+                        getCommentCount(post)))
                 .toList();
         return new PostListResponseDto(postDto);
     }
@@ -110,5 +110,15 @@ public class PostServiceImpl implements PostService {
             throw new PostUnauthorizedException();
         }
     }
+
+    private Long getLikeCount(Post post) {
+        return postRepository.likeCount(post.getId());
+    }
+
+    private Long getCommentCount(Post post) {
+        return postRepository.commentCount(post.getId());
+    }
+
+
 
 }
