@@ -1,13 +1,12 @@
 package com.newspeed.sixteenflow.domain.comments.dto;
 
 import com.newspeed.sixteenflow.domain.comments.entity.Comment;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class Response {
+public class CommnetResponse {
     private String NickName;
 
     private String ProfileImageUrl;
@@ -16,14 +15,14 @@ public class Response {
 
     private LocalDateTime modifiedAt;
 
-    public Response(Comment comment) {
+    public CommnetResponse(Comment comment) {
         this.NickName = comment.getMember().getNickname();
         this.ProfileImageUrl = comment.getMember().getProfileImageUrl();
         this.content = comment.getContent();
         this.modifiedAt = comment.getModifiedAt(); //BaseEntity에서 상속됌
     }
 
-    public Response(String nickName, String profileImageUrl, String content, LocalDateTime modifiedAt) {
+    public CommnetResponse(String nickName, String profileImageUrl, String content, LocalDateTime modifiedAt) {
         NickName = nickName;
         ProfileImageUrl = profileImageUrl;
         this.content = content;

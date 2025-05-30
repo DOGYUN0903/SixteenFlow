@@ -13,12 +13,13 @@ public enum CommentError implements BaseCode {
     COMMENT_CONTENT_EMPTY(HttpStatus.BAD_REQUEST, "댓글 내용을 비워둘 수 없습니다."),
 
     // 조회
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글 내용은 비워둘 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
 
     //수정
     COMMENT_UPDATE_UNAUTHORIZED(HttpStatus.FORBIDDEN, "해당 댓글을 찾을 수 없습니다."),
     COMMENT_UPDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "수정하려는 댓글이 존재하지 않습니다."),
     COMMENT_UPDATE_COMMENT_EMPTY(HttpStatus.BAD_REQUEST, "댓글 내용을 비운 채로 수정할 수 없습니다."),
+    COMMNET_UPDATE_COMMENT_SAME(HttpStatus.BAD_REQUEST, "댓글 내용이 동일합니다."),
 
     //삭제
     COMMENT_DELETE_NOT_FOUND(HttpStatus.NOT_FOUND, "삭제할 댓글이 존재하지 않습니다."),

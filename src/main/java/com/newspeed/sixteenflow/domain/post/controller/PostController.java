@@ -8,9 +8,11 @@ import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.response.success.PostSuccess;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,18 +31,17 @@ public class PostController {
         // TODO: 인증 방식 결정 후 로그인 유저의 memberId 주입 로직 추가 예정
         // ex) @AuthenticationPrincipal Long memberId (Spring Security 사용 시)
         return ApiResponse.status(PostSuccess.POST_CREATED)
-                .body(postService.create(7L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
+                .body(postService.create(1L, requestDto)); // FIXME: 현재는 memberId 미전달 상태
     }
 
     /**
      * 게시글 전체 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PostListResponseDto>> findAll() {
+    public ResponseEntity<ApiResponse<PageResponse<PostResponseDto>>> findAll(Pageable pageable) {
         return ApiResponse.status(PostSuccess.POST_FOUND)
-                .body(postService.findAll());
+                .body(postService.findAll(pageable));
     }
-
     /**
      * 게시글 단건 조회
      */
