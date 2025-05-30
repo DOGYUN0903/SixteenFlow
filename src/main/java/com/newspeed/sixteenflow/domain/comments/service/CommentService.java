@@ -1,25 +1,22 @@
 package com.newspeed.sixteenflow.domain.comments.service;
 
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
-import com.newspeed.sixteenflow.domain.comments.dto.Response;
+import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.entity.Comment;
 import com.newspeed.sixteenflow.domain.comments.repository.CommentRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
-import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
-import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
-import com.newspeed.sixteenflow.global.exception.commnet.CommentException;
+import com.newspeed.sixteenflow.global.exception.comment.CommentException;
+import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.CommentError;
-import org.springframework.http.HttpStatus;
+import com.newspeed.sixteenflow.global.response.error.MemberError;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 //
 @Service
@@ -47,7 +44,7 @@ public class CommentService {
     /**
      * 댓글  생성
      */
-    public Response createComment(Long postId,Long memberId,  CreateCommentRequest createRequest){
+    public CommnetResponse createComment(Long postId, Long memberId, CreateCommentRequest createRequest){
         //1. 게시글 조회
         Member foundMember = memberService.findByIdOrElseThrow(memberId); //알아서 예외처리
         Post foundPost = postService.findPostByIdOrElseThrow(postId); //알아서 예외처리
@@ -66,13 +63,13 @@ public class CommentService {
         Comment savedComment = commentRepository.save(newComment);
 
         //5.  DTO 반환
-        return new Response(savedComment);
+        return new CommnetResponse(savedComment);
     }
 
     /**
      * 게시글 댓글 전체 조회
      */
-    public  List<Response> findAllComments(Long postId){
+    public  List<CommnetResponse> findAllComments(Long postId){
 
         //null값 예외 처리
         postService.findPostByIdOrElseThrow(postId); //포스트 아이디 오류 처리를 위함
@@ -81,10 +78,10 @@ public class CommentService {
 
 
         //객체를 담을 배열 초기화
-        List <Response> getCommentList = new ArrayList<>();
+        List <CommnetResponse> getCommentList = new ArrayList<>();
 
         for (Comment getOneComment : foundByPostId){
-            getCommentList.add(new Response(getOneComment));
+            getCommentList.add(new CommnetResponse(getOneComment));
         }
         return getCommentList;
     }
@@ -94,53 +91,67 @@ public class CommentService {
     /**
      * 게시글 댓글 단건 조회
      */
-    public Response findComment(Long id){
+    public CommnetResponse findComment(Long id){
         //1. 게시글 조회
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
+        Comment comment = findByIdOrElseThrow(id);
 
         //2.리스폰디티오에 담아서 반환
-       return new Response(comment);
+       return new CommnetResponse(comment);
+    }
+
+    private Comment findByIdOrElseThrow(Long id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
     }
 
     /**
      *  댓글 수정
      */
-    public Response updateComment(Long id, UpdateCommentRequest updateRequest){
-        Comment findOne = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentException(CommentError.COMMENT_NOT_FOUND));
+    public CommnetResponse updateComment(Long id, Long memberId, UpdateCommentRequest updateRequest){
+        Comment findComment = findByIdOrElseThrow(id);
+
+        Long commentWriterId = findComment.getMember().getId();
+        Long postWriterId = findComment.getPost().getId();
+
+        if (!(commentWriterId.equals(memberId) || postWriterId.equals(memberId) )){
+            throw new MemberException(MemberError.MEMBER_UNAUTHORIZED);
+        }
 
         //업데이트할 내용
         String updateContent = updateRequest.getContent();
 
-        if( updateContent ==null || updateContent.equals("")){
-            throw new CommentException(CommentError.COMMENT_CONTENT_EMPTY);
-        }
-
-        if (updateContent.equals(findOne.getContent())){
+        if (updateContent.equals(findComment.getContent())){
             throw new CommentException(CommentError.COMMNET_UPDATE_COMMENT_SAME);
         }
-        findOne.changeContent(updateRequest.getContent());
+        findComment.changeContent(updateRequest.getContent());
 
         //저장
-        commentRepository.save(findOne);
+        commentRepository.save(findComment);
 
         //반환
-        return new Response(findOne);
+        return new CommnetResponse(findComment);
     }
 
     /**
      * 댓글 삭제
      */
-    public void deleteComment(Long id){
-        Comment toDelete = commentRepository.findById(id)
-                .orElseThrow(() -> new CommentException(CommentError.COMMENT_DELETE_NOT_FOUND));
+    public void deleteComment(Long memberId,Long id){
+
+        Comment findComment = findByIdOrElseThrow(id);
+
+        Long commentWriterId = findComment.getMember().getId();
+        Long postWriterId = findComment.getPost().getId();
+
+        if (!(commentWriterId.equals(memberId) || postWriterId.equals(memberId) )){
+            throw new MemberException(MemberError.MEMBER_UNAUTHORIZED);
+        }
+
 
         // 내가 작성한 댓글만 삭제할 수 있는 로직
 //        toDelete.getMember().getId();
-        toDelete.getMember().getId(); //현재 댓글의 작성자 id
+       //현재 댓글의 작성자 id
 
-        commentRepository.delete(toDelete);
+        commentRepository.delete(findComment);
 
     }
 

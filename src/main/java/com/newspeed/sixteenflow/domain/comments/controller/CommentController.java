@@ -3,8 +3,7 @@ package com.newspeed.sixteenflow.domain.comments.controller;
 
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
-import com.newspeed.sixteenflow.domain.comments.dto.Response;
-import com.newspeed.sixteenflow.domain.comments.entity.Comment;
+import com.newspeed.sixteenflow.domain.comments.dto.CommnetResponse;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.response.success.CommentSucceess;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -30,13 +28,13 @@ public class CommentController {
      * 댓글 생성
      */
     @PostMapping("/posts/{postId}/comments")
-    public  ResponseEntity<ApiResponse<Response>>  createComment(
+    public  ResponseEntity<ApiResponse<CommnetResponse>>  createComment(
             @PathVariable Long postId,
             @Validated  @RequestBody CreateCommentRequest createRequest
 
             ){
-
-        Response createResponse = commentService.createComment(postId,1L, createRequest);
+        Long memberId=1L;
+        CommnetResponse createResponse = commentService.createComment(postId, memberId, createRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_CREATED).body(createResponse);
     }
 
@@ -44,18 +42,18 @@ public class CommentController {
      * 한 페이지 내 댓글 전체 조회
      */
     @GetMapping("/posts/{postId}/comments")
-    public  ResponseEntity<ApiResponse<List<Response>>> findAllComments(@PathVariable Long postId){
-         List <Response> foundCommentList= commentService.findAllComments(postId);
+    public  ResponseEntity<ApiResponse<List<CommnetResponse>>> findAllComments(@PathVariable Long postId){
+         List <CommnetResponse> foundCommentList= commentService.findAllComments(postId);//오타
         return ApiResponse.status(CommentSucceess.COMMENT_READ_ALL).body(foundCommentList);
     }
 
     /**
      * 댓글 단 건 조회
      */
-    @GetMapping("/posts/{postId}/comments/{id}")
-    public ResponseEntity<ApiResponse<Response>> findComment(@PathVariable Long id){
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<ApiResponse<CommnetResponse>> findComment(@PathVariable Long id){
 
-        Response foundComment = commentService.findComment(id);
+        CommnetResponse foundComment = commentService.findComment(id);
         return ApiResponse.status(CommentSucceess.COMMENT_READ_ONE).body(foundComment);
 
     }
@@ -63,13 +61,13 @@ public class CommentController {
     /**
      * 댓글 수정
      */
-    @PatchMapping("/posts/{postId}/comments/{id}")
-    public  ResponseEntity<ApiResponse <Response>> updateComment(
+    @PatchMapping("/comments/{id}")
+    public  ResponseEntity<ApiResponse <CommnetResponse>> updateComment(
             @PathVariable Long id,
-            @RequestBody UpdateCommentRequest updateRequest
+            @Validated @RequestBody UpdateCommentRequest updateRequest
             ){
-
-        Response updatedOne = commentService.updateComment(id, updateRequest);
+        Long memberId= 1L;
+        CommnetResponse updatedOne = commentService.updateComment(id, memberId, updateRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_UPDATED).body(updatedOne);
     }
 
@@ -79,7 +77,8 @@ public class CommentController {
      */
     @DeleteMapping("/posts/{postId}/comments/{id}") // 로그인 상태일 때를 인식해야 함
     public ResponseEntity<ApiResponse<String>>  deleteComment(@PathVariable Long id){
-        commentService.deleteComment(id);
+        Long memberId= 1L;
+        commentService.deleteComment(memberId, id);
         return ApiResponse.status(CommentSucceess.COMMENT_DELETED).body();
     }
 }
