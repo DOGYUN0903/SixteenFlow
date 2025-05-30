@@ -6,6 +6,7 @@ import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
+import com.newspeed.sixteenflow.domain.post.entity.Post;
 
 public interface PostService {
     CreatePostResponseDto create(Long memberId, CreatePostRequestDto requestDto);
@@ -17,4 +18,8 @@ public interface PostService {
     UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto);
 
     void delete(Long memberId, Long postId);
+
+    PostListResponseDto getFollowingFeeds(Long memberId);
+
+    Post findPostByIdOrElseThrow(Long postId);
 }
