@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @Entity
 @Table(name = "post")
 @Getter
@@ -19,10 +20,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = true)
     private String imageUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 

@@ -10,9 +10,12 @@ import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.update.UpdatePostResponseDto;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.repository.PostRepository;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostUnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +44,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostListResponseDto findAll() {
-        List<PostResponseDto> postDto = postRepository.findAll().stream()
-                .map(post -> new PostResponseDto(post,
-                        0L,
-                        0L))
-                .toList();
-        return new PostListResponseDto(postDto);
+    public PageResponse<PostResponseDto> findAll(Pageable pageable) {
+        Page<PostResponseDto> postResponseDtoPage = postRepository.findAll(pageable)
+                .map(post -> new PostResponseDto(post, 0L, 0L));
+
+        return new PageResponse<>(postResponseDtoPage);
     }
 
     @Override
