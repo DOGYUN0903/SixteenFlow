@@ -14,19 +14,9 @@ public class CreateCommentRequest {
     @NotBlank(message = "댓글은 필수입니다.")
     private String content;
 
-    private Long memberId;
-
-    private Long postId;
 
     public String getContent() {
         return content;
     }
 
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
 }
