@@ -22,7 +22,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
             SELECT new com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto(
             :memberId,
             (SELECT COUNT(f) FROM Follow f WHERE f.follower.id = :memberId),
-            (SELECT COUNT(f) FROM Follow f WHERE f.follower.id = :memberId)
+            (SELECT COUNT(f) FROM Follow f WHERE f.following.id = :memberId)
             )
             """)
     FollowCountDto countFollowCountsByMemberId(@Param("memberId") Long memberId);
