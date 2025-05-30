@@ -20,7 +20,7 @@ public class MemberService {
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
-        String profileImageUrl = (requestDto.getProfileImageUrl() == null)
+        String profileImageUrl = (requestDto.getProfileImageUrl() == null || requestDto.getProfileImageUrl().trim().isEmpty())
                 ? "https://example.com/images/guestProfileImage.jpg" : requestDto.getProfileImageUrl();
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
