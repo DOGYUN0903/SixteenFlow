@@ -1,5 +1,7 @@
 package com.newspeed.sixteenflow.domain.member.service;
 
+import com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto;
+import com.newspeed.sixteenflow.domain.follow.service.FollowService;
 import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final FollowService followService;
     private final PasswordEncoder passwordEncoder;
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
@@ -65,7 +68,8 @@ public class MemberService {
 
     public MemberResponseDto findById(Long id) {
         Member foundMember = findActiveMemberOrThrow(id);
-        // todo: 팔로우 조회
+        //todo: memberId필드 제거??
+        FollowCountDto followCountDto = followService.getFollowerFollowingCount(id);
 
         // 본인 프로필 조회 시
 //        return MemberResponseDto.builder()
@@ -75,8 +79,7 @@ public class MemberService {
 //                .nickname(foundMember.getNickname())
 //                .address(foundMember.getAddress())
 //                .phoneNumber(foundMember.getPhoneNumber())
-//                .followingCount(5L)
-//                .followerCount(5L)
+//                .followCountDto(followCountDto)
 //                .createdAt(foundMember.getCreatedAt())
 //                .modifiedAt(foundMember.getModifiedAt())
 //                .build();
@@ -85,8 +88,7 @@ public class MemberService {
         return MemberResponseDto.builder()
                 .profileImageUrl(foundMember.getProfileImageUrl())
                 .nickname(foundMember.getNickname())
-                .followingCount(5L)
-                .followerCount(5L)
+                .followCountDto(followCountDto)
                 .createdAt(foundMember.getCreatedAt())
                 .modifiedAt(foundMember.getModifiedAt())
                 .build();
