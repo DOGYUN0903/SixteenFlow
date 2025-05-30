@@ -1,8 +1,8 @@
 package com.newspeed.sixteenflow.domain.post.service;
 
+import com.newspeed.sixteenflow.domain.follow.service.FollowService;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
-import com.newspeed.sixteenflow.domain.post.dto.PostListResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.PostResponseDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostRequestDto;
 import com.newspeed.sixteenflow.domain.post.dto.create.CreatePostResponseDto;
@@ -14,7 +14,6 @@ import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.exception.post.PostFollowingsNotFoundException;
 import com.newspeed.sixteenflow.global.exception.post.PostNotFoundException;
-import com.newspeed.sixteenflow.global.exception.post.PostUnauthorizedException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final MemberService memberService;
-//    private final FollowService followService;
+    private final FollowService followService;
 
     @Transactional
     @Override
@@ -66,7 +65,6 @@ public class PostServiceImpl implements PostService {
     public UpdatePostResponseDto update(Long memberId, Long postId, UpdatePostRequestDto requestDto) {
         Post findPost = findPostByIdOrElseThrow(postId);
 
-
         validatePostOwner(memberId, findPost);
 
         findPost.update(requestDto.getContent(), requestDto.getImageUrl());
@@ -86,7 +84,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResponse<PostResponseDto> findFollowingFeeds(Long memberId, Pageable pageable) {
-        List<Long> followingIds = followService.findFollwingIds(memberId);
+        List<Long> followingIds = followService.getFollowingsIds(memberId);
 
         if (followingIds.isEmpty()) {
             throw new PostFollowingsNotFoundException();
@@ -105,8 +103,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException());
     }
-
-
 
     // 게시물 id와 멤버의 id를 비교해서 동일한지 검증하는 메서드입니다.
     private static void validatePostOwner(Long memberId, Post findPost) {
