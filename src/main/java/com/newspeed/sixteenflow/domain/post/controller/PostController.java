@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/posts")
@@ -23,7 +24,7 @@ public class PostController {
     private final PostService postService;
 
     /**
-     * 게시글 생성
+     * 게시글 생성 API
      */
     @PostMapping
     public ResponseEntity<ApiResponse<CreatePostResponseDto>> create(@Valid @RequestBody CreatePostRequestDto requestDto) {
@@ -36,26 +37,22 @@ public class PostController {
     }
 
     /**
-     * 게시글 전체 조회
+     * 조건에 따른 게시글 조회 API
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<PostResponseDto>>> findAll(
-            @RequestParam(value = "feed", required = false, defaultValue = "false") Boolean feed,
+    public ResponseEntity<ApiResponse<PageResponse<PostResponseDto>>> findPosts(
+            @RequestParam(required = false, defaultValue = "false") Boolean feed,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) String keyword,
             Pageable pageable) {
         Long memberId = 1L;
-        PageResponse<PostResponseDto> responseDto;
-
-        if (feed) {
-            responseDto = postService.findFollowingFeeds(memberId, pageable);
-        } else {
-            responseDto = postService.findAll(pageable);
-        }
 
         return ApiResponse.status(PostSuccess.POST_FOUND)
-                .body(responseDto);
+                .body(postService.findPosts(memberId, feed, startDate, endDate, keyword, pageable));
     }
     /**
-     * 게시글 단건 조회
+     * 게시글 단건 조회 API
      */
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDto>> findById(@PathVariable("postId") Long postId) {
@@ -64,7 +61,7 @@ public class PostController {
     }
 
     /**
-     * 게시글 수정
+     * 게시글 수정 API
      */
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<UpdatePostResponseDto>> update(@PathVariable("postId") Long postId,
@@ -76,7 +73,7 @@ public class PostController {
     }
 
     /**
-     * 게시글 삭제
+     * 게시글 삭제 API
      */
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("postId") Long postId) {
