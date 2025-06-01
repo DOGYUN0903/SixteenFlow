@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 public enum FollowSuccess implements BaseCode {
 
     SUCCESS_RESPONSE(HttpStatus.OK, "Success"),
-    FOLLOW_SUCCESS(HttpStatus.OK, "팔로우 성공");
+    FOLLOW_SUCCESS(HttpStatus.OK, "팔로우 성공"),
+    UNFOLLOW_SUCCESS(HttpStatus.OK, "언팔로우 성공" ),;
 
     private HttpStatus status;
     private String message;

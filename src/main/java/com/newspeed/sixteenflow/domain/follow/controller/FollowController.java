@@ -27,4 +27,13 @@ public class FollowController {
         FollowResponseDto response = followService.follow(memberId, dto.getMemberId());
         return ApiResponse.status(FollowSuccess.FOLLOW_SUCCESS).body(response);
     }
+
+    @DeleteMapping("/members/{memberId}/unfollow")
+    public ResponseEntity<ApiResponse<FollowResponseDto>> unfollow(
+            @PathVariable Long memberId,
+            @Validated @RequestBody FollowRequestDto dto
+    ){
+        FollowResponseDto response = followService.unfollow(memberId, dto.getMemberId());
+        return ApiResponse.status(FollowSuccess.UNFOLLOW_SUCCESS).body(response);
+    }
 }

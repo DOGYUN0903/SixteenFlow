@@ -7,11 +7,17 @@ import com.newspeed.sixteenflow.domain.follow.repository.FollowRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.global.exception.follow.AlreadyFollowException;
+import com.newspeed.sixteenflow.global.exception.follow.CannotFollowSelfException;
+import com.newspeed.sixteenflow.global.exception.follow.CannotUnFollowSelfException;
+import com.newspeed.sixteenflow.global.exception.follow.FollowNotFoundException;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -63,6 +69,10 @@ public class FollowService {
      * @throws MemberException memberId가 존재하지 않을 경우 발생(memberService 내부 예외)
      */
     public FollowResponseDto follow(Long followerId, Long followingId) {
+        //자기 자신 팔로우 불가
+        if(followerId.equals(followingId))
+            throw new CannotFollowSelfException();
+
         //팔로워, 팔로잉 대상 존재 확인
         Member follower = memberService.findByIdOrElseThrow(followerId);
         Member following = memberService.findByIdOrElseThrow(followingId);
@@ -74,5 +84,32 @@ public class FollowService {
         //팔로우 정보 저장및 반환
         Follow result = followRepository.save(new Follow(follower,following));
         return FollowResponseDto.toDto(result);
+    }
+
+    /**
+     * 특정 member가 다른 member를 언팔로우하는 메소드
+     *
+     * @param followerId  언팔로우를 요청한 member의 id
+     * @param followingId 언팔로우 당할 member의 id
+     * @return 제거한 follow 객체의 응답 dto {@link FollowResponseDto}
+     * @throws FollowNotFoundException 이미 팔로우 관계가 존재할 경우
+     * @throws MemberException memberId가 존재하지 않을 경우 발생(memberService 내부 예외)
+     */
+    public FollowResponseDto unfollow(Long followerId, Long followingId) {
+        //자기 자신 언팔로우 불가
+        if(followerId.equals(followingId))
+            throw new CannotUnFollowSelfException();
+
+        //언팔로워, 언팔로잉 대상 존재 확인
+        Member follower = memberService.findByIdOrElseThrow(followerId);
+        Member following = memberService.findByIdOrElseThrow(followingId);
+
+        //이미 팔로우 중인지 확인
+        Follow follow = followRepository.findByFollowerAndFollowing(follower, following)
+                .orElseThrow(() -> new FollowNotFoundException());
+
+        //언팔로우
+        followRepository.delete(follow);
+        return FollowResponseDto.toDto(follow);
     }
 }
