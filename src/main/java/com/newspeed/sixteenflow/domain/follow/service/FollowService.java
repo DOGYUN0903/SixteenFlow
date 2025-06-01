@@ -1,6 +1,7 @@
 package com.newspeed.sixteenflow.domain.follow.service;
 
 import com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto;
+import com.newspeed.sixteenflow.domain.follow.dto.FollowMemberInfoDto;
 import com.newspeed.sixteenflow.domain.follow.dto.FollowResponseDto;
 import com.newspeed.sixteenflow.domain.follow.entity.Follow;
 import com.newspeed.sixteenflow.domain.follow.repository.FollowRepository;
@@ -14,6 +15,8 @@ import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -111,5 +114,18 @@ public class FollowService {
         //언팔로우
         followRepository.delete(follow);
         return FollowResponseDto.toDto(follow);
+    }
+
+    /**
+     * 특정 member가 팔로잉한 member목록을 페이징 조회하는 메소드
+     *
+     * @param memberId  팔로우 목록을 조회할 member의 id
+     * @param pageable 페이징 정보를 담은 객체(기본 page size 10)
+     * @return 팔로잉 중인 회원들의 정보를 담은 Page 객체 {@link FollowMemberInfoDto}
+     * @throws MemberException memberId가 존재하지 않을 경우 발생(memberService 내부 예외)
+     */
+    public Page<FollowMemberInfoDto> getFollowings(Long memberId, Pageable pageable) {
+        memberService.findByIdOrElseThrow(memberId);
+        return followRepository.findFollowingByMemberId(memberId, pageable);
     }
 }
