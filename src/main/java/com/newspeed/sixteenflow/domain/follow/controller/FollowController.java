@@ -52,4 +52,14 @@ public class FollowController {
        return ApiResponse.status(FollowSuccess.SUCCESS_RESPONSE)
                .body(new PageResponse<>(pages));
     }
+
+    @GetMapping("/members/{memberId}/followers")
+    public ResponseEntity<ApiResponse<PageResponse<FollowMemberInfoDto>>> followers(
+            @PathVariable Long memberId,
+            Pageable pageable
+    ){
+        Page<FollowMemberInfoDto> pages =  followService.getFollowers(memberId, pageable);
+        return ApiResponse.status(FollowSuccess.SUCCESS_RESPONSE)
+                .body(new PageResponse<>(pages));
+    }
 }

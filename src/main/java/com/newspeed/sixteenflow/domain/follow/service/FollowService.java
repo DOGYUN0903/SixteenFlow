@@ -117,15 +117,28 @@ public class FollowService {
     }
 
     /**
-     * 특정 member가 팔로잉한 member목록을 페이징 조회하는 메소드
+     * 특정 member가 팔로잉한 member 목록을 페이징 조회하는 메소드
      *
      * @param memberId  팔로우 목록을 조회할 member의 id
      * @param pageable 페이징 정보를 담은 객체(기본 page size 10)
-     * @return 팔로잉 중인 회원들의 정보를 담은 Page 객체 {@link FollowMemberInfoDto}
+     * @return 특정 member가 팔로잉 중인 member List를 담은 Page 객체 {@link FollowMemberInfoDto}
      * @throws MemberException memberId가 존재하지 않을 경우 발생(memberService 내부 예외)
      */
     public Page<FollowMemberInfoDto> getFollowings(Long memberId, Pageable pageable) {
         memberService.findByIdOrElseThrow(memberId);
         return followRepository.findFollowingByMemberId(memberId, pageable);
+    }
+
+    /**
+     * 특정 member를 팔로잉한 member 목록을 페이징 조회하는 메소드
+     *
+     * @param memberId  팔로워 목록을 조회할 member의 id
+     * @param pageable 페이징 정보를 담은 객체(기본 page size 10)
+     * @return 특정 member를 팔로잉 중인 member List를 담은 Page 객체 {@link FollowMemberInfoDto}
+     * @throws MemberException memberId가 존재하지 않을 경우 발생(memberService 내부 예외)
+     */
+    public Page<FollowMemberInfoDto> getFollowers(Long memberId, Pageable pageable) {
+        memberService.findByIdOrElseThrow(memberId);
+        return followRepository.findFollowersByMemberId(memberId, pageable);
     }
 }

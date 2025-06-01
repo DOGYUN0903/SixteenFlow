@@ -43,4 +43,15 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     Page<FollowMemberInfoDto> findFollowingByMemberId(
             @Param("memberId") Long memberId,
             Pageable pageable);
+
+    @Query("""
+            SELECT new com.newspeed.sixteenflow.domain.follow.dto.FollowMemberInfoDto(
+                        f.follower.id, m.nickname, m.profileImageUrl)
+            from Follow f join Member m
+            on f.follower.id = m.id
+            where f.following.id = :memberId
+            """)
+    Page<FollowMemberInfoDto> findFollowersByMemberId(
+            @Param("memberId") Long memberId,
+            Pageable pageable);
 }
