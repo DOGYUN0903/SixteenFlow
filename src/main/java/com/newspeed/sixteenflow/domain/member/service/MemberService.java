@@ -5,16 +5,17 @@ import com.newspeed.sixteenflow.domain.follow.service.FollowService;
 import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
-import com.newspeed.sixteenflow.global.config.PasswordEncoder;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+
     private final MemberRepository memberRepository;
     private final FollowService followService;
     private final PasswordEncoder passwordEncoder;
@@ -66,23 +67,25 @@ public class MemberService {
                 .orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
     }
 
-    public MemberResponseDto findById(Long id) {
+    public MemberResponseDto findById(Long id, Long loginId) {
         Member foundMember = findActiveMemberOrThrow(id);
-        //todo: memberId필드 제거??
+        //todo: memberId필드 제거
         FollowCountDto followCountDto = followService.getFollowerFollowingCount(id);
 
         // 본인 프로필 조회 시
-//        return MemberResponseDto.builder()
-//                .email(foundMember.getEmail())
-//                .profileImageUrl(foundMember.getProfileImageUrl())
-//                .username(foundMember.getUsername())
-//                .nickname(foundMember.getNickname())
-//                .address(foundMember.getAddress())
-//                .phoneNumber(foundMember.getPhoneNumber())
-//                .followCountDto(followCountDto)
-//                .createdAt(foundMember.getCreatedAt())
-//                .modifiedAt(foundMember.getModifiedAt())
-//                .build();
+        if (id.equals(loginId)) {
+            return MemberResponseDto.builder()
+                    .email(foundMember.getEmail())
+                    .profileImageUrl(foundMember.getProfileImageUrl())
+                    .username(foundMember.getUsername())
+                    .nickname(foundMember.getNickname())
+                    .address(foundMember.getAddress())
+                    .phoneNumber(foundMember.getPhoneNumber())
+                    .followCountDto(followCountDto)
+                    .createdAt(foundMember.getCreatedAt())
+                    .modifiedAt(foundMember.getModifiedAt())
+                    .build();
+        }
 
         // 타인 프로필 조회 시
         return MemberResponseDto.builder()
@@ -142,10 +145,15 @@ public class MemberService {
         // todo: 로그아웃
     }
 
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
+    }
+
     private Member findActiveMemberOrThrow(Long id) {
         Member foundMember = findByIdOrElseThrow(id);
 
-        if(foundMember.isDeleted()) {
+        if (foundMember.isDeleted()) {
             throw new MemberException(MemberError.MEMBER_DELETED);
         }
 
