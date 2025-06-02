@@ -7,7 +7,9 @@ public enum LikeSuccess implements BaseCode {
     POST_LIKE_SUCCESS(HttpStatus.CREATED, "게시글 좋아요 성공"),
     POST_LIKE_CANCEL(HttpStatus.OK, "게시글 좋아요 취소"),
     COMMENT_LIKE_SUCCESS(HttpStatus.CREATED, "댓글 좋아요 성공"),
-    COMMENT_LIKE_CANCEL(HttpStatus.OK, "댓글 좋아요 취소");
+    COMMENT_LIKE_CANCEL(HttpStatus.OK, "댓글 좋아요 취소"),
+    POST_LIKE_LIST_SEARCH_SUCCESS(HttpStatus.OK, "게시글 좋아요 검색 성공"),
+    COMMENT_LIKE_LIST_SEARCH_SUCCESS(HttpStatus.OK, "댓글 좋아요 검색 성공");
 
 
     private final HttpStatus status;
