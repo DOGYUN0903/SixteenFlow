@@ -10,7 +10,7 @@ public class PostResponseDto {
 
     private Long id;
 
-    private PostMemberDto postMemberDto;
+    private PostMemberDto member;
 
     private String content;
 
@@ -24,7 +24,7 @@ public class PostResponseDto {
 
     public PostResponseDto(Post post, Long likeCount, Long commentCount) {
         this.id = post.getId();
-        this.postMemberDto = new PostMemberDto(
+        this.member = new PostMemberDto(
                 post.getMember().getId(),
                 post.getMember().getNickname(),
                 post.getMember().getProfileImageUrl()
