@@ -21,7 +21,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
-        String phoneNumber = requestDto.getPhoneNumber();
         String profileImageUrl = (requestDto.getProfileImageUrl() == null || requestDto.getProfileImageUrl().trim().isEmpty())
                 ? "https://example.com/images/guestProfileImage.jpg" : requestDto.getProfileImageUrl();
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -34,11 +33,11 @@ public class MemberService {
             throw new MemberException(MemberError.MEMBER_NICKNAME_EXIST);
         }
 
-        if (memberRepository.existsByPhoneNumber(phoneNumber) && phoneNumber != null) {
+        if (memberRepository.existsByPhoneNumber(requestDto.getPhoneNumber()) && requestDto.getPhoneNumber() != null) {
             throw new MemberException(MemberError.MEMBER_PHONE_NUMBER_EXIST);
         }
 
-        Member member = Member.fromDto(requestDto, profileImageUrl, encodedPassword);
+        Member member = MemberRequestDto.toEntity(requestDto, profileImageUrl, encodedPassword);
 
         Member SavedMember = memberRepository.save(member);
 
@@ -57,17 +56,19 @@ public class MemberService {
     public MemberResponseDto getProfileById(Long id, Long loginId) {
         Member foundMember = findByIdOrElseThrow(id);
         FollowCountDto followCountDto = followRepository.countFollowCountsByMemberId(id);
+        Long followingCount = followCountDto.followingCount();
+        Long followerCount = followCountDto.followerCount();
 
         // 본인 프로필 조회 시
         if (id.equals(loginId)) {
-            return MemberResponseDto.toDetailProfileDto(foundMember, followCountDto);
+            return MemberResponseDto.toDetailProfileDto(foundMember, followingCount, followerCount);
         }
         // 타인 프로필 조회 시
-        return MemberResponseDto.toPublicProfileDto(foundMember, followCountDto);
+        return MemberResponseDto.toPublicProfileDto(foundMember, followingCount, followerCount);
     }
 
     @Transactional
-    public MemberResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
+    public MemberUpdateResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
         if (updateDto.isAllFieldsNullOrBlank()) {
             throw new MemberException(MemberError.MEMBER_NO_UPDATE_FIELDS);
         }
@@ -80,7 +81,7 @@ public class MemberService {
         updatePhoneNumberIfValid(foundMember, updateDto.getPhoneNumber());
         updateAddressIfValid(foundMember, updateDto.getAddress());
 
-        return MemberResponseDto.toDto(foundMember);
+        return MemberUpdateResponseDto.toDto(foundMember);
     }
 
     @Transactional
@@ -107,8 +108,6 @@ public class MemberService {
         }
 
         foundMember.delete();
-
-        // todo: 로그아웃
     }
 
     public Member findByLoginEmailOrElseThrow(String email) {

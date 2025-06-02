@@ -2,7 +2,6 @@ package com.newspeed.sixteenflow.domain.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,9 @@ public class MemberResponseDto {
 
     private final String phoneNumber;
 
-    private FollowCountDto followCountDto;
+    private final Long followCount;
+
+    private final Long followerCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdAt;
@@ -49,7 +50,7 @@ public class MemberResponseDto {
                 .build();
     }
 
-    public static MemberResponseDto toDetailProfileDto(Member member, FollowCountDto dto) {
+    public static MemberResponseDto toDetailProfileDto(Member member, Long followCount, Long followerCount) {
         return MemberResponseDto.builder()
                 .email(member.getEmail())
                 .profileImageUrl(member.getProfileImageUrl())
@@ -57,17 +58,19 @@ public class MemberResponseDto {
                 .nickname(member.getNickname())
                 .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
-                .followCountDto(dto)
+                .followCount(followCount)
+                .followerCount(followerCount)
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getModifiedAt())
                 .build();
     }
 
-    public static MemberResponseDto toPublicProfileDto(Member member, FollowCountDto dto) {
+    public static MemberResponseDto toPublicProfileDto(Member member, Long followCount, Long followerCount) {
         return MemberResponseDto.builder()
                 .profileImageUrl(member.getProfileImageUrl())
                 .nickname(member.getNickname())
-                .followCountDto(dto)
+                .followCount(followCount)
+                .followerCount(followerCount)
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getModifiedAt())
                 .build();

@@ -1,5 +1,6 @@
 package com.newspeed.sixteenflow.domain.member.dto;
 
+import com.newspeed.sixteenflow.domain.member.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -47,5 +48,17 @@ public class MemberRequestDto {
         this.nickname = nickname;
         this.address = address;
         this.phoneNumber = phoneNumber;
+    }
+
+    public static Member toEntity(MemberRequestDto requestDto, String profileImageUrl, String encodedPassword) {
+        return Member.builder()
+                .email(requestDto.getEmail())
+                .profileImageUrl(profileImageUrl)
+                .address(requestDto.getAddress())
+                .username(requestDto.getUsername())
+                .nickname(requestDto.getNickname())
+                .password(encodedPassword)
+                .phoneNumber(requestDto.getPhoneNumber())
+                .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.newspeed.sixteenflow.domain.member.entity;
 
-import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -43,18 +42,6 @@ public class Member extends BaseEntity {
 
     private boolean isDeleted = false;
 
-    public static Member fromDto(MemberRequestDto requestDto, String profileImageUrl, String encodedPassword) {
-        return Member.builder()
-                .email(requestDto.getEmail())
-                .profileImageUrl(profileImageUrl)
-                .address(requestDto.getAddress())
-                .username(requestDto.getUsername())
-                .nickname(requestDto.getNickname())
-                .password(encodedPassword)
-                .phoneNumber(requestDto.getPhoneNumber())
-                .build();
-    }
-
     public void updateEmail(String email) {
         this.email = email;
     }
@@ -63,7 +50,9 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public void updateAddress(String address) { this.address = address; }
+    public void updateAddress(String address) {
+        this.address = address;
+    }
 
     public void updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -73,7 +62,9 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public void updatePassword(String password) { this.password = password; }
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 
     public void delete() {
         this.isDeleted = true;

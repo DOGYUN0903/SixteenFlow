@@ -25,14 +25,14 @@ public class MemberController {
 
     @GetMapping("/{memberId}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> getProfileById(@PathVariable Long memberId,
-                                                                   @AuthenticationPrincipal Long loginId) {
+                                                                         @AuthenticationPrincipal Long loginId) {
         return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.getProfileById(memberId, loginId));
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateProfile(@PathVariable Long memberId,
-                                                                        @Valid @RequestBody MemberUpdateRequestDto updateDto,
-                                                                        @AuthenticationPrincipal Long loginId) {
+    public ResponseEntity<ApiResponse<MemberUpdateResponseDto>> updateProfile(@PathVariable Long memberId,
+                                                                              @Valid @RequestBody MemberUpdateRequestDto updateDto,
+                                                                              @AuthenticationPrincipal Long loginId) {
         if (!memberId.equals(loginId)) {
             return ApiResponse.status(MemberError.MEMBER_UNAUTHORIZED).body();
         }

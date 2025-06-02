@@ -1,5 +1,6 @@
 package com.newspeed.sixteenflow.global.config;
 
+import com.newspeed.sixteenflow.domain.auth.jwt.AuthenticationEntryPointImpl;
 import com.newspeed.sixteenflow.domain.auth.jwt.JwtFilter;
 import com.newspeed.sixteenflow.domain.auth.jwt.JwtUtil;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil, MemberService memberService) throws Exception {
@@ -32,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/members/*").permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
