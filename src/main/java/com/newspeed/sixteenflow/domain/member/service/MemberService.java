@@ -54,7 +54,7 @@ public class MemberService {
         return foundMember;
     }
 
-    public MemberResponseDto findById(Long id, Long loginId) {
+    public MemberResponseDto getProfileById(Long id, Long loginId) {
         Member foundMember = findByIdOrElseThrow(id);
         FollowCountDto followCountDto = followRepository.countFollowCountsByMemberId(id);
 

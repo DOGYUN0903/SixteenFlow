@@ -24,9 +24,9 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> findById(@PathVariable Long memberId,
+    public ResponseEntity<ApiResponse<MemberResponseDto>> getProfileById(@PathVariable Long memberId,
                                                                    @AuthenticationPrincipal Long loginId) {
-        return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.findById(memberId, loginId));
+        return ApiResponse.status(MemberSuccess.MEMBER_FOUND).body(memberService.getProfileById(memberId, loginId));
     }
 
     @PatchMapping("/{memberId}")
