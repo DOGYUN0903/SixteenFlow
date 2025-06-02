@@ -14,7 +14,8 @@ public enum MemberError implements BaseCode {
     MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "본인만 수정 및 삭제가 가능합니다."),
     MEMBER_INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     MEMBER_SAME_PASSWORD(HttpStatus.BAD_REQUEST, "현재 비밀번호와 동일합니다."),
-    MEMBER_DELETED(HttpStatus.FORBIDDEN, "탈퇴한 회원입니다");
+    MEMBER_DELETED(HttpStatus.FORBIDDEN, "탈퇴한 회원입니다"),
+    MEMBER_NO_UPDATE_FIELDS(HttpStatus.BAD_REQUEST, "수정할 내용이 없습니다." );
 
     private final HttpStatus status;
     private final String message;
