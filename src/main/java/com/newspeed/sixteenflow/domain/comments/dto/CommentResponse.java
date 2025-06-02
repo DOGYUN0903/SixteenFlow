@@ -7,24 +7,34 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CommentResponse {
-    private String NickName;
 
-    private String ProfileImageUrl;
+    private Long id;
+
+    private String nickName;
+
+    private String profileImageUrl;
+
+    private String email;
 
     private String content;
+
+    private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
 
     public CommentResponse(Comment comment) {
-        this.NickName = comment.getMember().getNickname();
-        this.ProfileImageUrl = comment.getMember().getProfileImageUrl();
+        this.id = comment.getId();
+        this.nickName = comment.getMember().getNickname();
+        this.email = comment.getMember().getEmail();
+        this.profileImageUrl = comment.getMember().getProfileImageUrl();
         this.content = comment.getContent();
+        this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt(); //BaseEntity에서 상속됌
     }
 
     public CommentResponse(String nickName, String profileImageUrl, String content, LocalDateTime modifiedAt) {
-        NickName = nickName;
-        ProfileImageUrl = profileImageUrl;
+        nickName = nickName;
+        profileImageUrl = profileImageUrl;
         this.content = content;
         this.modifiedAt = modifiedAt;
     }

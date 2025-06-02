@@ -33,8 +33,6 @@ public class CommentController {
     public  ResponseEntity<ApiResponse<CommentResponse>>  createComment(
             @PathVariable Long postId,
             @Validated  @RequestBody CreateCommentRequest createRequest
-
-
             ){
         Long memberId=1L;
         CommentResponse createResponse = commentService.createComment(postId, memberId, createRequest);
@@ -47,7 +45,7 @@ public class CommentController {
     @GetMapping("/posts/{postId}/comments")
     public  ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> findAllComments(
             @PathVariable Long postId,
-    @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         //pageable을 요청 변수로 받아줘야, 페이지가 넘겨짐
         PageResponse<CommentResponse> pagingAllComments = commentService.findAllComments(postId, pageable);
         return ApiResponse.status(CommentSucceess.COMMENT_READ_ALL).body(pagingAllComments);
@@ -79,7 +77,7 @@ public class CommentController {
      * 댓글 삭제
      * 반환 값 어떻게 해야 하는지 질문
      */
-    @DeleteMapping("/posts/{postId}/comments/{id}") // 로그인 상태일 때를 인식해야 함
+    @DeleteMapping("/comments/{id}") // 로그인 상태일 때를 인식해야 함
     public ResponseEntity<ApiResponse<String>>  deleteComment(@PathVariable Long id){
         Long memberId= 1L;
         commentService.deleteComment(memberId, id);
