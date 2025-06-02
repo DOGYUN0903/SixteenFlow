@@ -2,6 +2,7 @@ package com.newspeed.sixteenflow.domain.like.service;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
+import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.PostLike;
 import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
@@ -48,12 +49,16 @@ public class PostLikeService {
     }
 
     //좋아요 전체 조회기능 구현
-    public PageResponse<PostLikeSearchDetailDto> getLikedMembersByPost(Long postId, Pageable pageable) {
+    public PostLikeSearchResponseDto getLikedMembersByPost(Long postId, Pageable pageable) {
         //댓글 존재 여부 확인
         postService.findPostByIdOrElseThrow(postId); // 게시글 존재 여부 검증
+
         //좋아요 누른 사용자 목록을 페이지 단위로 조회
         Page<PostLikeSearchDetailDto> likedMembers = postLikeRepository.findAllLikedMembersByPostId(postId, pageable);
-        return new PageResponse<>(likedMembers);
+
+        PageResponse<PostLikeSearchDetailDto> pageResponse = new PageResponse<>(likedMembers);
+
+        return new PostLikeSearchResponseDto(postId, pageResponse);
     }
 
 }

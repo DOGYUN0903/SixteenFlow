@@ -2,6 +2,7 @@ package com.newspeed.sixteenflow.domain.like.controller;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
+import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchResponseDto;
 import com.newspeed.sixteenflow.domain.like.service.PostLikeService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.common.PageResponse;
@@ -53,7 +54,7 @@ public class PostLikeController {
      * @return 좋아요 누른 사용자 리스트 (프로필 이미지, 닉네임)
      */
     @GetMapping("/{postId}/likes") // GET /posts/1/likes?page=0&size=10
-    public ResponseEntity<ApiResponse<PageResponse<PostLikeSearchDetailDto>>> getLikedMembers(
+    public ResponseEntity<ApiResponse<PostLikeSearchResponseDto>> getLikedMembers(
             @PathVariable Long postId,
             Pageable pageable
     ) {

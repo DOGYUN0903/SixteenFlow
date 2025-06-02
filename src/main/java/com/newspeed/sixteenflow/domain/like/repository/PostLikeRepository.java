@@ -21,11 +21,11 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     int countByPostId(Long postId);
 
     @Query("""
-            SELECT new com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto
-                        (m.profileImageUrl, m.nickname)
-                        FROM PostLike pl JOIN pl.member m
-                        WHERE pl.post.id = :postId""")
-
+    SELECT new com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto
+           (m.id, m.profileImageUrl, m.nickname)
+    FROM PostLike pl JOIN pl.member m
+    WHERE pl.post.id = :postId
+""")
     Page<PostLikeSearchDetailDto> findAllLikedMembersByPostId(
             @Param("postId") Long postId,
             Pageable pageable);
