@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import org.hibernate.validator.constraints.URL;
 
 @Getter
 public class MemberRequestDto {
@@ -15,6 +16,7 @@ public class MemberRequestDto {
     )
     private final String email;
 
+    @URL(message = "유효하지 않은 url 입니다.")
     private final String profileImageUrl;
 
     @NotBlank

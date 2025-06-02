@@ -1,4 +1,4 @@
-package com.newspeed.sixteenflow.domain.member.dto;
+package com.newspeed.sixteenflow.domain.auth.dto;
 
 import lombok.Getter;
 
@@ -13,3 +13,4 @@ public class LoginRequestDto {
         this.password = password;
     }
 }
+
