@@ -1,17 +1,17 @@
 package com.newspeed.sixteenflow.domain.like.service;
 
 import com.newspeed.sixteenflow.domain.comments.entity.Comment;
-import com.newspeed.sixteenflow.domain.comments.repository.CommentRepository;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchDetailDto;
-import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchListResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.CommentLike;
 import com.newspeed.sixteenflow.domain.like.repository.CommentLikeRepository;
-import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
-    private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final MemberService memberservice;
-    private final PostLikeRepository postLikeRepository;
 
 
     public CommentLikeResponseDto toggleLike(Long memberId, Long commentId) {
@@ -50,12 +48,11 @@ public class CommentLikeService {
         return new CommentLikeResponseDto(commentId, likeCount, like);
     }
 
-    public CommentLikeSearchListResponseDto getLikedMembersByComment(Long commentId) {
-        //존재하는 댓글인가?
-        Comment comment = commentService.findByIdOrElseThrow(commentId);
-
-        List<CommentLikeSearchDetailDto> likedMembers = commentLikeRepository.findAllLikedMembersByCommentId(commentId);
-        int likeCount = commentLikeRepository.countByCommentId(commentId);
-        return new CommentLikeSearchListResponseDto(commentId, likeCount, likedMembers);
+    public PageResponse<CommentLikeSearchDetailDto> getLikedMembersByComment(Long commentId, Pageable pageable) {
+        // 댓글 존재 여부 확인
+        commentService.findByIdOrElseThrow(commentId);
+        //좋아요 누른 사용자 목록을 페이지 단위로 조회
+        Page<CommentLikeSearchDetailDto> page = commentLikeRepository.findAllLikedMembersByCommentId(commentId, pageable);
+        return new PageResponse<>(page);
     }
 }
