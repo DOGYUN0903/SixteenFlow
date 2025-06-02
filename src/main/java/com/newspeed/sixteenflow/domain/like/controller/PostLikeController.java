@@ -1,11 +1,9 @@
 package com.newspeed.sixteenflow.domain.like.controller;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
-import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchResponseDto;
 import com.newspeed.sixteenflow.domain.like.service.PostLikeService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
-import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.response.success.LikeSuccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
