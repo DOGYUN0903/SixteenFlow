@@ -3,6 +3,7 @@ package com.newspeed.sixteenflow.domain.member.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import org.hibernate.validator.constraints.URL;
 
 @Getter
 public class MemberUpdateRequestDto {
@@ -13,6 +14,7 @@ public class MemberUpdateRequestDto {
     )
     private final String email;
 
+    @URL(message = "유효하지 않은 url 입니다.")
     private final String profileImageUrl;
 
     private final String nickname;
