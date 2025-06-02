@@ -1,12 +1,16 @@
 package com.newspeed.sixteenflow.domain.member.entity;
 
+import com.newspeed.sixteenflow.domain.member.dto.MemberRequestDto;
 import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@Builder
 @Getter
 @NoArgsConstructor
 @Entity
@@ -39,15 +43,16 @@ public class Member extends BaseEntity {
 
     private boolean isDeleted = false;
 
-    @Builder
-    public Member(String email, String profileImageUrl, String password, String username, String nickname, String address, String phoneNumber) {
-        this.email = email;
-        this.profileImageUrl = profileImageUrl;
-        this.password = password;
-        this.username = username;
-        this.nickname = nickname;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
+    public static Member fromDto(MemberRequestDto requestDto, String profileImageUrl, String encodedPassword) {
+        return Member.builder()
+                .email(requestDto.getEmail())
+                .profileImageUrl(profileImageUrl)
+                .address(requestDto.getAddress())
+                .username(requestDto.getUsername())
+                .nickname(requestDto.getNickname())
+                .password(encodedPassword)
+                .phoneNumber(requestDto.getPhoneNumber())
+                .build();
     }
 
     public void updateEmail(String email) {

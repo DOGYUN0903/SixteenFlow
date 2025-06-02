@@ -38,68 +38,41 @@ public class MemberService {
             throw new MemberException(MemberError.MEMBER_PHONE_NUMBER_EXIST);
         }
 
-        Member member = Member.builder()
-                .email(requestDto.getEmail())
-                .profileImageUrl(profileImageUrl)
-                .address(requestDto.getAddress())
-                .username(requestDto.getUsername())
-                .nickname(requestDto.getNickname())
-                .password(encodedPassword)
-                .phoneNumber(phoneNumber)
-                .build();
+        Member member = Member.fromDto(requestDto, profileImageUrl, encodedPassword);
 
         Member SavedMember = memberRepository.save(member);
 
-        return MemberResponseDto.builder()
-                .id(SavedMember.getId())
-                .email(SavedMember.getEmail())
-                .profileImageUrl(profileImageUrl)
-                .username(SavedMember.getUsername())
-                .nickname(SavedMember.getNickname())
-                .address(SavedMember.getAddress())
-                .phoneNumber(SavedMember.getPhoneNumber())
-                .createdAt(SavedMember.getCreatedAt())
-                .build();
+        return MemberResponseDto.toDto(SavedMember);
     }
 
     public Member findByIdOrElseThrow(Long id) {
-        return memberRepository.findById(id)
-                .orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+        Member foundMember = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+        if (foundMember.isDeleted()) {
+            throw new MemberException(MemberError.MEMBER_DELETED);
+        }
+
+        return foundMember;
     }
 
     public MemberResponseDto findById(Long id, Long loginId) {
-        Member foundMember = findActiveMemberOrThrow(id);
-        //todo: memberId필드 제거
+        Member foundMember = findByIdOrElseThrow(id);
         FollowCountDto followCountDto = followRepository.countFollowCountsByMemberId(id);
 
         // 본인 프로필 조회 시
         if (id.equals(loginId)) {
-            return MemberResponseDto.builder()
-                    .email(foundMember.getEmail())
-                    .profileImageUrl(foundMember.getProfileImageUrl())
-                    .username(foundMember.getUsername())
-                    .nickname(foundMember.getNickname())
-                    .address(foundMember.getAddress())
-                    .phoneNumber(foundMember.getPhoneNumber())
-                    .followCountDto(followCountDto)
-                    .createdAt(foundMember.getCreatedAt())
-                    .modifiedAt(foundMember.getModifiedAt())
-                    .build();
+            return MemberResponseDto.toDetailProfileDto(foundMember, followCountDto);
         }
-
         // 타인 프로필 조회 시
-        return MemberResponseDto.builder()
-                .profileImageUrl(foundMember.getProfileImageUrl())
-                .nickname(foundMember.getNickname())
-                .followCountDto(followCountDto)
-                .createdAt(foundMember.getCreatedAt())
-                .modifiedAt(foundMember.getModifiedAt())
-                .build();
+        return MemberResponseDto.toPublicProfileDto(foundMember, followCountDto);
     }
 
     @Transactional
     public MemberResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
-        Member foundMember = findActiveMemberOrThrow(id);
+        if (updateDto.isAllFieldsNullOrBlank()) {
+            throw new MemberException(MemberError.MEMBER_NO_UPDATE_FIELDS);
+        }
+
+        Member foundMember = findByIdOrElseThrow(id);
 
         updateEmailIfValid(foundMember, updateDto.getEmail());
         updateProfileImageUrlIfValid(foundMember, updateDto.getProfileImageUrl());
@@ -107,14 +80,7 @@ public class MemberService {
         updatePhoneNumberIfValid(foundMember, updateDto.getPhoneNumber());
         updateAddressIfValid(foundMember, updateDto.getAddress());
 
-        return MemberResponseDto.builder()
-                .email(foundMember.getEmail())
-                .profileImageUrl(foundMember.getProfileImageUrl())
-                .nickname(foundMember.getNickname())
-                .address(foundMember.getAddress())
-                .phoneNumber(foundMember.getPhoneNumber())
-                .modifiedAt(foundMember.getModifiedAt())
-                .build();
+        return MemberResponseDto.toDto(foundMember);
     }
 
     @Transactional
@@ -123,7 +89,7 @@ public class MemberService {
             throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
         }
 
-        Member foundMember = findActiveMemberOrThrow(id);
+        Member foundMember = findByIdOrElseThrow(id);
 
         if (!passwordEncoder.matches(passwordDto.getOldPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
@@ -134,7 +100,7 @@ public class MemberService {
 
     @Transactional
     public void delete(Long id, MemberDeleteRequestDto deleteDto) {
-        Member foundMember = findActiveMemberOrThrow(id);
+        Member foundMember = findByIdOrElseThrow(id);
 
         if (!passwordEncoder.matches(deleteDto.getPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
@@ -145,19 +111,8 @@ public class MemberService {
         // todo: 로그아웃
     }
 
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
-    }
-
-    private Member findActiveMemberOrThrow(Long id) {
-        Member foundMember = findByIdOrElseThrow(id);
-
-        if (foundMember.isDeleted()) {
-            throw new MemberException(MemberError.MEMBER_DELETED);
-        }
-
-        return foundMember;
+    public Member findByLoginEmailOrElseThrow(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
     }
 
     private void updateAddressIfValid(Member foundMember, String address) {

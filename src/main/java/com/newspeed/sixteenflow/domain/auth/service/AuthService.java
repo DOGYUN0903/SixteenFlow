@@ -20,7 +20,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public LoginUserDto login(LoginRequestDto requestDto) {
-        Member foundMember = memberService.findByEmail(requestDto.getEmail());
+        Member foundMember = memberService.findByLoginEmailOrElseThrow(requestDto.getEmail());
 
         if (!passwordEncoder.matches(requestDto.getPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_LOGIN_FAILED);
