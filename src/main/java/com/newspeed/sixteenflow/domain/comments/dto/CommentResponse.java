@@ -33,8 +33,8 @@ public class CommentResponse {
     }
 
     public CommentResponse(String nickName, String profileImageUrl, String content, LocalDateTime modifiedAt) {
-        nickName = nickName;
-        profileImageUrl = profileImageUrl;
+        this.nickName = nickName;
+        this.profileImageUrl = profileImageUrl;
         this.content = content;
         this.modifiedAt = modifiedAt;
     }
