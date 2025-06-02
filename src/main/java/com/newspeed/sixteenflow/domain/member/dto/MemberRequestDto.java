@@ -1,8 +1,10 @@
 package com.newspeed.sixteenflow.domain.member.dto;
 
+import com.newspeed.sixteenflow.domain.member.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import org.hibernate.validator.constraints.URL;
 
@@ -30,6 +32,7 @@ public class MemberRequestDto {
     private final String username;
 
     @NotBlank
+    @Size(min = 2, max = 16, message = "닉네임은 2자 이상 16자 이하로 입력해주세요.")
     private final String nickname;
 
     private final String address;
@@ -45,5 +48,17 @@ public class MemberRequestDto {
         this.nickname = nickname;
         this.address = address;
         this.phoneNumber = phoneNumber;
+    }
+
+    public static Member toEntity(MemberRequestDto requestDto, String profileImageUrl, String encodedPassword) {
+        return Member.builder()
+                .email(requestDto.getEmail())
+                .profileImageUrl(profileImageUrl)
+                .address(requestDto.getAddress())
+                .username(requestDto.getUsername())
+                .nickname(requestDto.getNickname())
+                .password(encodedPassword)
+                .phoneNumber(requestDto.getPhoneNumber())
+                .build();
     }
 }

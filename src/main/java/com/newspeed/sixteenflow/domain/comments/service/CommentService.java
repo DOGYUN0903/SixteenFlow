@@ -2,6 +2,7 @@ package com.newspeed.sixteenflow.domain.comments.service;
 import com.newspeed.sixteenflow.domain.comments.dto.CommentResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
+import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentResponse;
 import com.newspeed.sixteenflow.domain.comments.entity.Comment;
 import com.newspeed.sixteenflow.domain.comments.repository.CommentRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
@@ -112,7 +113,7 @@ public class CommentService {
     /**
      *  댓글 수정
      */
-    public CommentResponse updateComment(Long id, Long memberId, UpdateCommentRequest updateRequest){
+    public UpdateCommentResponse updateComment(Long id, Long memberId, UpdateCommentRequest updateRequest){
         Comment findComment = findByIdOrElseThrow(id);
 
         Long commentWriterId = findComment.getMember().getId();
@@ -131,10 +132,10 @@ public class CommentService {
         findComment.changeContent(updateRequest.getContent());
 
         //저장
-        commentRepository.save(findComment);
+        Comment save = commentRepository.save(findComment);
 
         //반환
-        return new CommentResponse(findComment);
+        return new UpdateCommentResponse(save);
     }
 
     /**
