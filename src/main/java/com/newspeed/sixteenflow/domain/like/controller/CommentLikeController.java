@@ -2,9 +2,9 @@ package com.newspeed.sixteenflow.domain.like.controller;
 
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchDetailDto;
+import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchResponseDto;
 import com.newspeed.sixteenflow.domain.like.service.CommentLikeService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
-import com.newspeed.sixteenflow.global.common.PageResponse;
 import com.newspeed.sixteenflow.global.response.success.LikeSuccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +51,7 @@ public class CommentLikeController {
      * @return 좋아요 누른 사용자 리스트 (프로필 이미지, 닉네임 등)
      */
     @GetMapping("/{commentId}/likes") //GET /comments/1/likes?page=0&size=10
-    public ResponseEntity<ApiResponse<PageResponse<CommentLikeSearchDetailDto>>> getLikedMembers(
+    public ResponseEntity<ApiResponse<CommentLikeSearchResponseDto>> getLikedMembers(
             @PathVariable Long commentId,
             Pageable pageable
     ) {

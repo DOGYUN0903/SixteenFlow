@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class CommentLikeSearchDetailDto {
+    private final Long memberId;
     private final String profileImageUrl;
     private final String nickname;
 }

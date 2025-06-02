@@ -4,6 +4,7 @@ import com.newspeed.sixteenflow.domain.comments.entity.Comment;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchDetailDto;
+import com.newspeed.sixteenflow.domain.like.dto.CommentLikeSearchDto.CommentLikeSearchResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.CommentLike;
 import com.newspeed.sixteenflow.domain.like.repository.CommentLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,11 +45,13 @@ public class CommentLikeService {
         return new CommentLikeResponseDto(commentId, likeCount, like);
     }
 
-    public PageResponse<CommentLikeSearchDetailDto> getLikedMembersByComment(Long commentId, Pageable pageable) {
+    public CommentLikeSearchResponseDto getLikedMembersByComment(Long commentId, Pageable pageable) {
         // 댓글 존재 여부 확인
         commentService.findByIdOrElseThrow(commentId);
         //좋아요 누른 사용자 목록을 페이지 단위로 조회
-        Page<CommentLikeSearchDetailDto> page = commentLikeRepository.findAllLikedMembersByCommentId(commentId, pageable);
-        return new PageResponse<>(page);
+        Page<CommentLikeSearchDetailDto> likedMembers = commentLikeRepository.findAllLikedMembersByCommentId(commentId, pageable);
+
+        PageResponse<CommentLikeSearchDetailDto> pageResponse = new PageResponse<>(likedMembers);
+        return new CommentLikeSearchResponseDto(commentId, pageResponse);
     }
 }
