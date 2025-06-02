@@ -58,7 +58,9 @@ public class PostLikeService {
 
         PageResponse<PostLikeSearchDetailDto> pageResponse = new PageResponse<>(likedMembers);
 
-        return new PostLikeSearchResponseDto(postId, pageResponse);
+        int likeCount = postLikeRepository.countByPostId(postId);
+
+        return new PostLikeSearchResponseDto(postId, likeCount, pageResponse);
     }
 
 }
