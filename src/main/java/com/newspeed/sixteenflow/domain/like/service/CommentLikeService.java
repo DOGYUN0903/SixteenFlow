@@ -26,9 +26,6 @@ public class CommentLikeService {
 
 
     public CommentLikeResponseDto toggleLike(Long memberId, Long commentId) {
-
-        //TODO: JWT의 사용자 ID와 넘어온 memberId가 일치하는지 확인
-
         //이미 존재하는 댓글, 멤버 인가?
         Comment comment = commentService.findByIdOrElseThrow(commentId);
         Member member = memberservice.findByIdOrElseThrow(memberId);

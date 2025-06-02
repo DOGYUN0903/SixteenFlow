@@ -26,8 +26,6 @@ public class PostLikeService {
     //좋아요 누르기 (toggle)/ 취소 == HardDelete, 만일 existing되어 있는경우는 좋아요가 눌러진 상태
     public PostLikeResponseDto toggleLike(Long memberId, Long postId) {
 
-    // TODO: JWT의 사용자 ID와 넘어온 memberId가 일치하는지 확인
-
         Post post = postService.findPostByIdOrElseThrow(postId);
         Member member = memberservice.findByIdOrElseThrow(memberId);
 
