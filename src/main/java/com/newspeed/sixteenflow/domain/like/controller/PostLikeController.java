@@ -1,7 +1,6 @@
 package com.newspeed.sixteenflow.domain.like.controller;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
-import com.newspeed.sixteenflow.domain.like.dto.PostLikeRequestDto;
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
 import com.newspeed.sixteenflow.domain.like.service.PostLikeService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
@@ -21,46 +20,31 @@ public class PostLikeController {
     // 비즈니스 로직을 처리할 서비스 의존성 주입
     private final PostLikeService postLikeService;
 
-//    /**
-//     * 게시글 좋아요 토글 (좋아요/좋아요 취소)
-//     * @param postId 게시글 ID (PathVariable로 URL 경로에서 추출)
-//     * @param memberId  로그인한 사용자 ID (JWT에서 추출)
-//     * @return 좋아요 상태(true/false)와 좋아요 수를 담은 응답
-//     */
+    /**
+     * 게시글 좋아요 토글 (좋아요/좋아요 취소)
+     * @param postId 게시글 ID (PathVariable로 URL 경로에서 추출)
+     * @param memberId  로그인한 사용자 ID (JWT에서 추출)
+     * @return 좋아요 상태(true/false)와 좋아요 수를 담은 응답
+     */
 
     //좋아요기능
-//    @PostMapping("/{postId}/likes")  // POST 요청 처리: 예) /posts/1/likes
-//    public ResponseEntity<ApiResponse<PostLikeResponseDto>> toggleLike(
-//            @PathVariable Long postId, // 경로에서 postId 추출
-//            @AuthenticationPrincipal Long memberId
-//    ) {
-//        // 좋아요 처리 (토글 방식): 있으면 취소, 없으면 생성
-//        PostLikeResponseDto postresponse = postLikeService.toggleLike(memberId, postId);
-//
-//        // 좋아요 성공 또는 취소 여부에 따라 응답 메시지 구분 (if문 사용)
-//        if (postresponse.isLike()) {
-//            return ApiResponse.status(LikeSuccess.POST_LIKE_SUCCESS).body(postresponse);
-//
-//        } else {
-//            return ApiResponse.status(LikeSuccess.POST_LIKE_CANCEL).body(postresponse);
-//        }
-//    }
-
-
-
-    @PostMapping("/{postId}/likes")
+    @PostMapping("/{postId}/likes")  // POST 요청 처리: 예) /posts/1/likes
     public ResponseEntity<ApiResponse<PostLikeResponseDto>> toggleLike(
-            @PathVariable Long postId,
-            @RequestBody PostLikeRequestDto postLikeRequest
+            @PathVariable Long postId, // 경로에서 postId 추출
+            @AuthenticationPrincipal Long memberId
     ) {
-        PostLikeResponseDto response = postLikeService.toggleLike(postLikeRequest.getMemberId(), postId);
+        // 좋아요 처리 (토글 방식): 있으면 취소, 없으면 생성
+        PostLikeResponseDto postresponse = postLikeService.toggleLike(memberId, postId);
 
-        if (response.isLike()) {
-            return ApiResponse.status(LikeSuccess.POST_LIKE_SUCCESS).body(response);
+        // 좋아요 성공 또는 취소 여부에 따라 응답 메시지 구분 (if문 사용)
+        if (postresponse.isLike()) {
+            return ApiResponse.status(LikeSuccess.POST_LIKE_SUCCESS).body(postresponse);
+
         } else {
-            return ApiResponse.status(LikeSuccess.POST_LIKE_CANCEL).body(response);
+            return ApiResponse.status(LikeSuccess.POST_LIKE_CANCEL).body(postresponse);
         }
     }
+
 
     /**
      * 게시글 좋아요를 누른 사용자 목록을 10개씩 조회
