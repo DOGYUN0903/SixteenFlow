@@ -2,17 +2,18 @@ package com.newspeed.sixteenflow.domain.like.service;
 
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeResponseDto;
 import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchDetailDto;
-import com.newspeed.sixteenflow.domain.like.dto.PostLikeSearchDto.PostLikeSearchListResponseDto;
 import com.newspeed.sixteenflow.domain.like.entity.PostLike;
 import com.newspeed.sixteenflow.domain.like.repository.PostLikeRepository;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.service.MemberService;
 import com.newspeed.sixteenflow.domain.post.entity.Post;
 import com.newspeed.sixteenflow.domain.post.service.PostService;
+import com.newspeed.sixteenflow.global.common.PageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,12 +50,12 @@ public class PostLikeService {
     }
 
     //좋아요 전체 조회기능 구현
-    public PostLikeSearchListResponseDto getLikedMembersByPost(Long postId) {
-        Post post = postService.findPostByIdOrElseThrow(postId);
-
-        List<PostLikeSearchDetailDto> likedMembers = postLikeRepository.findAllLikedMembersByPostId(postId);
-        int likeCount = postLikeRepository.countByPostId(postId);
-        return new PostLikeSearchListResponseDto(postId, likeCount, likedMembers);
+    public PageResponse<PostLikeSearchDetailDto> getLikedMembersByPost(Long postId, Pageable pageable) {
+        //댓글 존재 여부 확인
+        postService.findPostByIdOrElseThrow(postId); // 게시글 존재 여부 검증
+        //좋아요 누른 사용자 목록을 페이지 단위로 조회
+        Page<PostLikeSearchDetailDto> likedMembers = postLikeRepository.findAllLikedMembersByPostId(postId, pageable);
+        return new PageResponse<>(likedMembers);
     }
 
 }
