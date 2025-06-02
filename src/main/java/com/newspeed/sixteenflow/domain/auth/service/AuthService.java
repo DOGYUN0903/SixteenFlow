@@ -26,7 +26,7 @@ public class AuthService {
             throw new MemberException(MemberError.MEMBER_LOGIN_FAILED);
         }
 
-        String jwtToken = jwtUtil.generateToken(foundMember.getId(), foundMember.getEmail());
+        String jwtToken = jwtUtil.generateToken(foundMember.getId());
         return new LoginUserDto(jwtToken);
     }
 }

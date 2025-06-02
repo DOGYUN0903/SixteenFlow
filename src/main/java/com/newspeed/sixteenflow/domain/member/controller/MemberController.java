@@ -18,7 +18,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<ApiResponse<MemberResponseDto>> create(@Valid @RequestBody MemberRequestDto requestDto) {
         return ApiResponse.status(MemberSuccess.MEMBER_SIGNUP).body(memberService.create(requestDto));
     }

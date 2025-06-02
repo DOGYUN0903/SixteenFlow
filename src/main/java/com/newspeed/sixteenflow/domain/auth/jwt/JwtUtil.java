@@ -24,10 +24,9 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Long memberId, String email) {
+    public String generateToken(Long memberId) {
         return Jwts.builder()
                 .setSubject(String.valueOf(memberId))
-                .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -37,10 +36,6 @@ public class JwtUtil {
     public Long getMemberIdFromToken(String token) {
         String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
         return Long.valueOf(subject);
-    }
-
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("email", String.class);
     }
 
     public boolean validateToken(String token) {

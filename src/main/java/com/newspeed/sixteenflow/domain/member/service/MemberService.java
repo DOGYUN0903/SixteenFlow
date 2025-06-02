@@ -1,7 +1,7 @@
 package com.newspeed.sixteenflow.domain.member.service;
 
 import com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto;
-import com.newspeed.sixteenflow.domain.follow.service.FollowService;
+import com.newspeed.sixteenflow.domain.follow.repository.FollowRepository;
 import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final FollowService followService;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
@@ -70,7 +70,7 @@ public class MemberService {
     public MemberResponseDto findById(Long id, Long loginId) {
         Member foundMember = findActiveMemberOrThrow(id);
         //todo: memberId필드 제거
-        FollowCountDto followCountDto = followService.getFollowerFollowingCount(id);
+        FollowCountDto followCountDto = followRepository.countFollowCountsByMemberId(id);
 
         // 본인 프로필 조회 시
         if (id.equals(loginId)) {
