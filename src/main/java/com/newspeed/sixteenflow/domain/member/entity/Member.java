@@ -3,10 +3,13 @@ package com.newspeed.sixteenflow.domain.member.entity;
 import com.newspeed.sixteenflow.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@Builder
 @Getter
 @NoArgsConstructor
 @Entity
@@ -39,17 +42,6 @@ public class Member extends BaseEntity {
 
     private boolean isDeleted = false;
 
-    @Builder
-    public Member(String email, String profileImageUrl, String password, String username, String nickname, String address, String phoneNumber) {
-        this.email = email;
-        this.profileImageUrl = profileImageUrl;
-        this.password = password;
-        this.username = username;
-        this.nickname = nickname;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-    }
-
     public void updateEmail(String email) {
         this.email = email;
     }
@@ -58,7 +50,9 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public void updateAddress(String address) { this.address = address; }
+    public void updateAddress(String address) {
+        this.address = address;
+    }
 
     public void updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -68,7 +62,9 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public void updatePassword(String password) { this.password = password; }
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 
     public void delete() {
         this.isDeleted = true;
