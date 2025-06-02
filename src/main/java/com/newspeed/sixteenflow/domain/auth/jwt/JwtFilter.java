@@ -1,5 +1,9 @@
 package com.newspeed.sixteenflow.domain.auth.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newspeed.sixteenflow.global.exception.BaseException;
+import com.newspeed.sixteenflow.global.exception.member.MemberException;
+import com.newspeed.sixteenflow.global.response.error.MemberError;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -22,10 +28,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        try {
+            String header = request.getHeader("Authorization");
 
-        String header = request.getHeader("Authorization");
+            if (header == null || !header.startsWith("Bearer ")) {
+                throw new MemberException(MemberError.MEMBER_TOKEN_MALFORMED);
+            }
 
-        if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
             if (jwtUtil.validateToken(token)) {
@@ -36,8 +45,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        }
 
-        chain.doFilter(request, response);
+            chain.doFilter(request, response);
+
+        } catch (BaseException e) {
+            Map<String, String> errors = new LinkedHashMap<>();
+            errors.put("statusCode", String.valueOf(e.getErrorCode().getStatus().value()));
+            errors.put("message", e.getErrorCode().getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
+            response.setStatus(e.getErrorCode().getStatus().value());
+        }
     }
 }
