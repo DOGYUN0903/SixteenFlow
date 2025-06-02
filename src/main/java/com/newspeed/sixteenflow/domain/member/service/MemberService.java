@@ -1,26 +1,28 @@
 package com.newspeed.sixteenflow.domain.member.service;
 
+import com.newspeed.sixteenflow.domain.follow.dto.FollowCountDto;
+import com.newspeed.sixteenflow.domain.follow.repository.FollowRepository;
 import com.newspeed.sixteenflow.domain.member.dto.*;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import com.newspeed.sixteenflow.domain.member.repository.MemberRepository;
-import com.newspeed.sixteenflow.global.config.PasswordEncoder;
 import com.newspeed.sixteenflow.global.exception.member.MemberException;
 import com.newspeed.sixteenflow.global.response.error.MemberError;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+
     private final MemberRepository memberRepository;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MemberResponseDto create(MemberRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
-        String profileImageUrl = (requestDto.getProfileImageUrl() == null)
+        String profileImageUrl = (requestDto.getProfileImageUrl() == null || requestDto.getProfileImageUrl().trim().isEmpty())
                 ? "https://example.com/images/guestProfileImage.jpg" : requestDto.getProfileImageUrl();
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
@@ -61,34 +63,35 @@ public class MemberService {
     }
 
     public Member findByIdOrElseThrow(Long id) {
-        Optional<Member> foundMember = memberRepository.findByIdAndIsDeleted(id, false);
-        return foundMember.orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MemberError.MEMBER_NOT_FOUND));
     }
 
-    public MemberResponseDto findById(Long id) {
-        Member foundMember = findByIdOrElseThrow(id);
-        // todo: 팔로우 조회
+    public MemberResponseDto findById(Long id, Long loginId) {
+        Member foundMember = findActiveMemberOrThrow(id);
+        //todo: memberId필드 제거
+        FollowCountDto followCountDto = followRepository.countFollowCountsByMemberId(id);
 
         // 본인 프로필 조회 시
-//        return MemberResponseDto.builder()
-//                .email(foundMember.getEmail())
-//                .profileImageUrl(foundMember.getProfileImageUrl())
-//                .username(foundMember.getUsername())
-//                .nickname(foundMember.getNickname())
-//                .address(foundMember.getAddress())
-//                .phoneNumber(foundMember.getPhoneNumber())
-//                .followingCount(5L)
-//                .followerCount(5L)
-//                .createdAt(foundMember.getCreatedAt())
-//                .modifiedAt(foundMember.getModifiedAt())
-//                .build();
+        if (id.equals(loginId)) {
+            return MemberResponseDto.builder()
+                    .email(foundMember.getEmail())
+                    .profileImageUrl(foundMember.getProfileImageUrl())
+                    .username(foundMember.getUsername())
+                    .nickname(foundMember.getNickname())
+                    .address(foundMember.getAddress())
+                    .phoneNumber(foundMember.getPhoneNumber())
+                    .followCountDto(followCountDto)
+                    .createdAt(foundMember.getCreatedAt())
+                    .modifiedAt(foundMember.getModifiedAt())
+                    .build();
+        }
 
         // 타인 프로필 조회 시
         return MemberResponseDto.builder()
                 .profileImageUrl(foundMember.getProfileImageUrl())
                 .nickname(foundMember.getNickname())
-                .followingCount(5L)
-                .followerCount(5L)
+                .followCountDto(followCountDto)
                 .createdAt(foundMember.getCreatedAt())
                 .modifiedAt(foundMember.getModifiedAt())
                 .build();
@@ -96,7 +99,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto update(Long id, MemberUpdateRequestDto updateDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        Member foundMember = findActiveMemberOrThrow(id);
 
         updateEmailIfValid(foundMember, updateDto.getEmail());
         updateProfileImageUrlIfValid(foundMember, updateDto.getProfileImageUrl());
@@ -116,14 +119,14 @@ public class MemberService {
 
     @Transactional
     public void changePassword(Long id, ChangePasswordRequestDto passwordDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
+            throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
+        }
+
+        Member foundMember = findActiveMemberOrThrow(id);
 
         if (!passwordEncoder.matches(passwordDto.getOldPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
-        }
-
-        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
-            throw new MemberException(MemberError.MEMBER_SAME_PASSWORD);
         }
 
         foundMember.updatePassword(passwordEncoder.encode(passwordDto.getNewPassword()));
@@ -131,13 +134,30 @@ public class MemberService {
 
     @Transactional
     public void delete(Long id, MemberDeleteRequestDto deleteDto) {
-        Member foundMember = findByIdOrElseThrow(id);
+        Member foundMember = findActiveMemberOrThrow(id);
 
         if (!passwordEncoder.matches(deleteDto.getPassword(), foundMember.getPassword())) {
             throw new MemberException(MemberError.MEMBER_INCORRECT_PASSWORD);
         }
 
         foundMember.delete();
+
+        // todo: 로그아웃
+    }
+
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
+    }
+
+    private Member findActiveMemberOrThrow(Long id) {
+        Member foundMember = findByIdOrElseThrow(id);
+
+        if (foundMember.isDeleted()) {
+            throw new MemberException(MemberError.MEMBER_DELETED);
+        }
+
+        return foundMember;
     }
 
     private void updateAddressIfValid(Member foundMember, String address) {
