@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
@@ -27,10 +28,10 @@ public class PostController {
      * 게시글 생성 API
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<CreatePostResponseDto>> create(@Valid @RequestBody CreatePostRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<CreatePostResponseDto>> create(@Valid @RequestBody CreatePostRequestDto requestDto,
+                                                                     @AuthenticationPrincipal Long memberId) {
         // TODO: 인증 방식 결정 후 로그인 유저의 memberId 주입 로직 추가 예정
         // ex) @AuthenticationPrincipal Long memberId (Spring Security 사용 시)
-        Long memberId = 1L;
 
         return ApiResponse.status(PostSuccess.POST_CREATED)
                 .body(postService.create(memberId, requestDto)); // FIXME: 현재는 memberId 미전달 상태
@@ -41,12 +42,12 @@ public class PostController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<PostResponseDto>>> findPosts(
+            @AuthenticationPrincipal Long memberId,
             @RequestParam(required = false, defaultValue = "false") Boolean feed,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) String keyword,
             Pageable pageable) {
-        Long memberId = 1L;
 
         return ApiResponse.status(PostSuccess.POST_FOUND)
                 .body(postService.findPosts(memberId, feed, startDate, endDate, keyword, pageable));
@@ -65,8 +66,8 @@ public class PostController {
      */
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<UpdatePostResponseDto>> update(@PathVariable("postId") Long postId,
-                                                                         @Valid @RequestBody UpdatePostRequestDto requestDto) {
-        Long memberId = 1L;
+                                                                     @Valid @RequestBody UpdatePostRequestDto requestDto,
+                                                                     @AuthenticationPrincipal Long memberId) {
 
         return ApiResponse.status(PostSuccess.POST_UPDATED)
                 .body(postService.update(memberId, postId, requestDto));
@@ -76,8 +77,8 @@ public class PostController {
      * 게시글 삭제 API
      */
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("postId") Long postId) {
-        Long memberId = 1L;
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("postId") Long postId,
+                                                    @AuthenticationPrincipal Long memberId) {
         postService.delete(memberId, postId);
         return ApiResponse.status(PostSuccess.POST_DELETED).body();
     }
