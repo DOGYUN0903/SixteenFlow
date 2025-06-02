@@ -4,6 +4,7 @@ package com.newspeed.sixteenflow.domain.comments.controller;
 import com.newspeed.sixteenflow.domain.comments.dto.CommentResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
+import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentResponse;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.common.PageResponse;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ public class CommentController {
     public  ResponseEntity<ApiResponse<CommentResponse>>  createComment(
             @PathVariable Long postId,
             @Validated  @RequestBody CreateCommentRequest createRequest
+
             ){
         Long memberId=1L;
         CommentResponse createResponse = commentService.createComment(postId, memberId, createRequest);
@@ -64,12 +67,12 @@ public class CommentController {
      * 댓글 수정
      */
     @PatchMapping("/comments/{id}")
-    public  ResponseEntity<ApiResponse <CommentResponse>> updateComment(
+    public  ResponseEntity<ApiResponse <UpdateCommentResponse>> updateComment(
             @PathVariable Long id,
             @Validated @RequestBody UpdateCommentRequest updateRequest
             ){
         Long memberId= 1L;
-        CommentResponse updatedOne = commentService.updateComment(id, memberId, updateRequest);
+        UpdateCommentResponse updatedOne = commentService.updateComment(id, memberId, updateRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_UPDATED).body(updatedOne);
     }
 
