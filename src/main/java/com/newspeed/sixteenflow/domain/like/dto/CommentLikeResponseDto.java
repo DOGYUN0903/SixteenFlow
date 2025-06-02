@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class PostLikeResponseDto {
-    private final Long postId;
-    private final int likePostCount;
+public class CommentLikeResponseDto {
+    private final Long commentId;
+    private final int likeCommentCount;
     private final boolean like; // 현재 좋아요 상태 (toggle용)
 }
