@@ -36,11 +36,11 @@ public class PostLikeController {
         // 좋아요 처리 (토글 방식): 있으면 취소, 없으면 생성
         PostLikeResponseDto postresponse = postLikeService.toggleLike(memberId, postId);
 
-        // 좋아요 성공 또는 취소 여부에 따라 응답 메시지 구분 (if문 사용)
-        if (postresponse.isLike()) {
+        // 좋아요 성공 또는 취소 여부에 따라 응답 메시지 구분
+        if (postresponse.isLike()) {  //좋아요 시
             return ApiResponse.status(LikeSuccess.POST_LIKE_SUCCESS).body(postresponse);
 
-        } else {
+        } else { //좋아요 취소 시
             return ApiResponse.status(LikeSuccess.POST_LIKE_CANCEL).body(postresponse);
         }
     }
@@ -49,8 +49,8 @@ public class PostLikeController {
     /**
      * 게시글 좋아요를 누른 사용자 목록을 10개씩 조회
      * @param postId 조회할 게시글의 ID
-     * @param pageable 페이지 정보 (page, size 등은 Spring이 자동으로 처리)
-     * @return 좋아요 누른 사용자 리스트 (프로필 이미지, 닉네임 등)
+     * @param pageable 페이지 정보
+     * @return 좋아요 누른 사용자 리스트 (프로필 이미지, 닉네임)
      */
     @GetMapping("/{postId}/likes") // GET /posts/1/likes?page=0&size=10
     public ResponseEntity<ApiResponse<PageResponse<PostLikeSearchDetailDto>>> getLikedMembers(
