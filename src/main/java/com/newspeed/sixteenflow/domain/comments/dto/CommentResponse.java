@@ -10,11 +10,7 @@ public class CommentResponse {
 
     private Long id;
 
-    private String nickName;
-
-    private String profileImageUrl;
-
-    private String email;
+    private CommentMemberDto member;
 
     private String content;
 
@@ -24,18 +20,14 @@ public class CommentResponse {
 
     public CommentResponse(Comment comment) {
         this.id = comment.getId();
-        this.nickName = comment.getMember().getNickname();
-        this.email = comment.getMember().getEmail();
-        this.profileImageUrl = comment.getMember().getProfileImageUrl();
+        this.member = new CommentMemberDto(
+                comment.getMember().getId(),
+                comment.getMember().getNickname(),
+                comment.getMember().getProfileImageUrl()
+        );
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt(); //BaseEntity에서 상속됌
     }
 
-    public CommentResponse(String nickName, String profileImageUrl, String content, LocalDateTime modifiedAt) {
-        this.nickName = nickName;
-        this.profileImageUrl = profileImageUrl;
-        this.content = content;
-        this.modifiedAt = modifiedAt;
-    }
 }

@@ -51,7 +51,9 @@ public class CommentLikeService {
         //좋아요 누른 사용자 목록을 페이지 단위로 조회
         Page<CommentLikeSearchDetailDto> likedMembers = commentLikeRepository.findAllLikedMembersByCommentId(commentId, pageable);
 
+        int likeCount = commentLikeRepository.countByCommentId(commentId);
+
         PageResponse<CommentLikeSearchDetailDto> pageResponse = new PageResponse<>(likedMembers);
-        return new CommentLikeSearchResponseDto(commentId, pageResponse);
+        return new CommentLikeSearchResponseDto(commentId, likeCount, pageResponse);
     }
 }

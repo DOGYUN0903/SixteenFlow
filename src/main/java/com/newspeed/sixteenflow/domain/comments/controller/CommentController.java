@@ -4,6 +4,7 @@ package com.newspeed.sixteenflow.domain.comments.controller;
 import com.newspeed.sixteenflow.domain.comments.dto.CommentResponse;
 import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentRequest;
 import com.newspeed.sixteenflow.domain.comments.dto.CreateCommentRequest;
+import com.newspeed.sixteenflow.domain.comments.dto.UpdateCommentResponse;
 import com.newspeed.sixteenflow.domain.comments.service.CommentService;
 import com.newspeed.sixteenflow.global.common.ApiResponse;
 import com.newspeed.sixteenflow.global.common.PageResponse;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +34,10 @@ public class CommentController {
     @PostMapping("/posts/{postId}/comments")
     public  ResponseEntity<ApiResponse<CommentResponse>>  createComment(
             @PathVariable Long postId,
-            @Validated  @RequestBody CreateCommentRequest createRequest
+            @Validated  @RequestBody CreateCommentRequest createRequest,
+            @AuthenticationPrincipal Long memberId
             ){
-        Long memberId=1L;
+
         CommentResponse createResponse = commentService.createComment(postId, memberId, createRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_CREATED).body(createResponse);
     }
@@ -64,12 +67,14 @@ public class CommentController {
      * 댓글 수정
      */
     @PatchMapping("/comments/{id}")
-    public  ResponseEntity<ApiResponse <CommentResponse>> updateComment(
+    public  ResponseEntity<ApiResponse <UpdateCommentResponse>> updateComment(
             @PathVariable Long id,
-            @Validated @RequestBody UpdateCommentRequest updateRequest
-            ){
-        Long memberId= 1L;
-        CommentResponse updatedOne = commentService.updateComment(id, memberId, updateRequest);
+            @Validated @RequestBody UpdateCommentRequest updateRequest,
+            @AuthenticationPrincipal Long memberId
+
+    ){
+
+        UpdateCommentResponse updatedOne = commentService.updateComment(id, memberId, updateRequest);
         return ApiResponse.status(CommentSucceess.COMMENT_UPDATED).body(updatedOne);
     }
 
@@ -78,8 +83,11 @@ public class CommentController {
      * 반환 값 어떻게 해야 하는지 질문
      */
     @DeleteMapping("/comments/{id}") // 로그인 상태일 때를 인식해야 함
-    public ResponseEntity<ApiResponse<String>>  deleteComment(@PathVariable Long id){
-        Long memberId= 1L;
+    public ResponseEntity<ApiResponse<String>>  deleteComment(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Long memberId
+    ){
+
         commentService.deleteComment(memberId, id);
         return ApiResponse.status(CommentSucceess.COMMENT_DELETED).body();
     }
