@@ -3,9 +3,11 @@ package com.newspeed.sixteenflow.domain.member.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.newspeed.sixteenflow.domain.member.entity.Member;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MemberUpdateResponseDto {

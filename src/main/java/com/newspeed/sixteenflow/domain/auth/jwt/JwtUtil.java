@@ -28,7 +28,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(String.valueOf(memberId))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 4))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
