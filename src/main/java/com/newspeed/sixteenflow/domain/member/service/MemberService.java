@@ -111,7 +111,12 @@ public class MemberService {
     }
 
     public Member findByLoginEmailOrElseThrow(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
+        Member foundMember = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberError.MEMBER_LOGIN_FAILED));
+        if (foundMember.isDeleted()) {
+            throw new MemberException(MemberError.MEMBER_DELETED);
+        }
+
+        return foundMember;
     }
 
     private void updateAddressIfValid(Member foundMember, String address) {
